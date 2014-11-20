@@ -1,3 +1,35 @@
+% SUMCHI2CDF                  CDF for infinite weighted sums of chi-square
+% 
+%     Fxval = sumchi2cdf(xval,p)
+%
+%     INPUTS
+%     xval
+%     p
+%
+%     OUTPUTS
+%     Fxval - CDF value
+%
+%     REFERENCE
+%     Keilson J et al (1983). Significance points for some tests of uniformity 
+%       on the sphere. J Statist Comput Simul 17: 195-218.
+
+%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     The full license and most recent version of the code can be found on GitHub:
+%     https://github.com/brian-lau/spheretest
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+% 
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+% 
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 function Fxval = sumchi2cdf(xval,p)
 
 switch p
