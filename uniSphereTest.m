@@ -30,36 +30,19 @@ switch lower(par.Results.test)
       pval = 1 - chi2cdf(stat,p);
    case {'gine','g'}
       stat = gine(U,n,p);
-      %keyboard
-      %[pval,boot] = bootstrap(f,stat,nboot,n,p);
-      boot = zeros(par.Results.nboot,1);
-      for i = 1:par.Results.nboot
-         Umc = spheresign(randn(n,p));
-         boot(i) = gine(Umc,n,p);
-      end
-      pval = sum(boot>=stat)./par.Results.nboot;
+      [pval,boot] = bootstrap('gine',stat,par.Results.nboot,n,p);
    case {'gine3','g3'}
       if p ~= 3
-         error('Only valid for p=3');
+         error('Only valid for p = 3');
       end
       stat = gine3(U,n,p);
       pval = 1 - sumchi2cdf(stat,3);
    case {'ajne','a'}
       stat = ajne(U,n);
-      boot = zeros(par.Results.nboot,1);
-      for i = 1:par.Results.nboot
-         Umc = spheresign(randn(n,p));
-         boot(i) = ajne(Umc,n);
-      end
-      pval = sum(boot>=stat)./par.Results.nboot;
+      [pval,boot] = bootstrap('ajne',stat,par.Results.nboot,n,p);
    case {'gine-ajne','ga','ag'}
       stat = gineajne(U,n,p);
-      boot = zeros(par.Results.nboot,1);
-      for i = 1:par.Results.nboot
-         Umc = spheresign(randn(n,p));
-         boot(i) = gineajne(Umc,n,p);
-      end
-      pval = sum(boot>=stat)./par.Results.nboot;
+      [pval,boot] = bootstrap('gineajne',stat,par.Results.nboot,n,p);
    case {'bingham','b'}
       stat = bingham(U,n,p);
       pval = 1 - chi2cdf(stat,((p-1)*(p+2))/2);
@@ -70,7 +53,7 @@ switch lower(par.Results.test)
       stat = [];%pval;
       pval = min(adj_p);
    otherwise
-      error('bad');
+      error('Unknown test.');
 end
 
 function [pval,boot] = bootstrap(f,stat,nboot,n,p)
@@ -105,7 +88,7 @@ function Fn = gine3(U,n,p)
 psi = psivec(U,n);
 Fn = (3*n)/2 - (4/(n*pi)) * sum(psi + sin(psi));
 
-function A = ajne(U,n)
+function A = ajne(U,n,p)
 psi = psivec(U,n);
 A = (n/4) - (1/(n*pi))*sum(psi);
 
