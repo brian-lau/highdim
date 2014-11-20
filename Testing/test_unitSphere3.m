@@ -1,14 +1,14 @@
-n = [240];% 1000];
-p = 10;%[4 10];%[4 10 20];
-kappa = 2;%[0 1 2];%[0 1 2 4];
-reps = 1;
+n = [100];% 1000];
+p = 8;%[4 10];%[4 10 20];
+kappa = [0 1 2];%[0 1 2 4];
+reps = 10;
 
 tic;
 for i = 1:numel(kappa)
    for j = 1:numel(p)
       for k = 1:reps
-         x = randvonMisesFisherm(p(j),n,kappa(i))';
-         %x = [randn(n,p(j)) ; randvonMisesFisherm(p(j),n,kappa(i))'];
+         %x = randvonMisesFisherm(p(j),n,kappa(i))';
+         x = [randn(n,p(j)) ; randvonMisesFisherm(p(j),n,kappa(i))'];
          
 %          mu = zeros(1,p(j));
 %          mu(end) = 1;
