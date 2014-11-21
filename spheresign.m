@@ -28,3 +28,4 @@
 function U = spheresign(x)
 
 U = bsxfun(@rdivide,x,sqrt(sum(x.^2,2)));
+U(isnan(U)) = 0;
