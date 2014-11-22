@@ -1,19 +1,23 @@
 % BINGHAM                     Bingham statistic for spherical uniformity 
 % 
-%     B = bingham(U)
+%     [pval,B] = bingham(U)
+%
+%     Antipodially symmetric
+%     Not consistent against alternatives with E[xx'] = (1/p)*Ip
 %
 %     INPUTS
 %     U - [n x p] matrix, n samples with dimensionality p
 %         the data should already be projected to the unit hypersphere
 %
 %     OUTPUTS
+%     pval - p-value
 %     B - statistic
 %
 %     REFERENCE
 %     Mardia, KV, Jupp, PE (2000). Directional Statistics. John Wiley
 %
 %     SEE ALSO
-%     spheresign
+%     uniSphereTest, spatialSign
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found on GitHub:
@@ -32,7 +36,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function B = bingham(U)
+function [pval,B] = bingham(U)
 
 [n,p] = size(U);
 
@@ -50,3 +54,5 @@ else
    B2 = 4*(p^2-4)/(3*(p+4)*(p^2+p+2)*(p^2+p+6));
    B = B*(1 - (1/n)*(B0 + B1*B + B2*B^2));
 end
+
+pval = 1 - chi2cdf(B,((p-1)*(p+2))/2);

@@ -73,3 +73,13 @@ end
 %    temp = temp + a2(i) * chi2pdf(xval,vp2q);
 % end
 % 
+
+% 
+% p = 3
+% syms theta
+% hp = (1/sqrt(pi)) * (gamma(p/2)/(gamma((p-1)/2)*sqrt(2)))*...
+%    (sin(theta).^(p-2));
+% qsym = simplify(int(hp,theta,p)); % Solve integral symbolically
+% pretty(qsym)
+% 
+% double(subs(qsym,{theta},{0:.1:pi}))

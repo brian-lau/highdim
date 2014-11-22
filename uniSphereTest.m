@@ -1,4 +1,4 @@
-% UNISPHERETEST               Test whether data is uniformly distributed on unit hypersphere 
+% UNISPHERETEST               Test if data is uniformly distributed on unit hypersphere 
 % 
 %     [pval,stat] = uniSphereTest(x,varargin)
 %
@@ -10,12 +10,12 @@
 %
 %     OUTPUTS
 %     pval - p-value
-%     stat - corresponding statistic
+%     stat - statistic
 %
 %     REFERENCE
 %
 %     SEE ALSO
-%     
+%     sphereTest
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found on GitHub:
@@ -34,11 +34,6 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-% rayleigh - not consistent against alternatives with zero resultant length
-%            Mardia & Jupp, pg 209
-%            most powerful invariant test against von mises alternative
-% bingham  - antipodially symmetric
-%            not consistent alterriatives with E[xx'] = (1/p)*Ip
 function [pval,stat] = uniSphereTest(x,varargin)
 
 import sphere.*
@@ -58,25 +53,20 @@ addParamValue(par,'nboot',1000,@isnumeric);
 addParamValue(par,'k',25,@isnumeric);
 addParamValue(par,'dist','boot',@ischar);
 parse(par,x,varargin{:});
-
 nboot = par.Results.nboot;
 k = par.Results.k;
+
 [n,p] = size(x);
-U = spheresign(x);
+U = spatialSign(x);
 
 switch lower(par.Results.test)
    case {'rayleigh','r'}
-      stat = rayleigh(U);
-      pval = 1 - chi2cdf(stat,p);
+      [pval,stat] = rayleigh(U);
    case {'gine','g'}
       stat = gine(U);
       [pval,boot] = bootstrap('sphere.gine');
    case {'gine3','g3'}
-      if p ~= 3
-         error('Only valid for p = 3');
-      end
-      stat = gine3(U);
-      pval = 1 - sumchi2cdf(stat,3);
+      [pval,stat] = gine3(U);
    case {'ajne','a'}
       stat = ajne(U);
       [pval,boot] = bootstrap('sphere.ajne');
@@ -84,25 +74,24 @@ switch lower(par.Results.test)
       stat = gineajne(U);
       [pval,boot] = bootstrap('sphere.gineajne');
    case {'bingham','b'}
-      stat = bingham(U);
-      pval = 1 - chi2cdf(stat,((p-1)*(p+2))/2);
+      [pval,stat] = bingham(U);
    case {'rp'}
       stat = rp(U,k);
-      
       switch par.Results.dist
          case 'asymp'
             for i = 1:k
-               test_cdf = [ stat(:,i) , sphere.rpcdf(stat(:,i),p)];
+               test_cdf = [ stat(:,i) , rpcdf(stat(:,i),p)];
                [~,pval(i)] = kstest(stat(:,i),'CDF',test_cdf);
             end
          otherwise
-            Umc = spheresign(randn(nboot,p));
-            u0 = spheresign(randn(1,p));
+            Umc = spatialSign(randn(nboot,p));
+            u0 = spatialSign(randn(1,p));
             Ymc = acos(Umc*u0');
             for i = 1:k
                [~,pval(i)] = kstest2(stat(:,i),Ymc);
             end
       end
+      % TODO add bonferroni correction
       [~,~,adj_p] = fdr_bh(pval,.05,'pdep');
       pval = min(adj_p);
    otherwise
@@ -112,7 +101,7 @@ end
 function [pval,boot] = bootstrap(f)
    boot = zeros(nboot,1);
    for j = 1:nboot
-      Umc = spheresign(randn(n,p));
+      Umc = sphere.spatialSign(randn(n,p));
       boot(j) = feval(f,Umc);
    end
    pval = sum(boot>=stat)/nboot;

@@ -2,9 +2,9 @@
 % 
 %     h = rppdf(theta,p)
 %
-%     The distribution of pairwise angles between vectors X1, ? ? ? ,Xn 
+%     The distribution of pairwise angles between vectors X1,...,Xn 
 %     that are random points independently chosen with the uniform distribution 
-%     on S^(p?1), the unit sphere in R^p.
+%     on S^(p-1), the unit sphere in R^p.
 %
 %     INPUTS
 %     theta - angles (radians) to evaluate pdf
@@ -13,12 +13,26 @@
 %     OUTPUTS
 %     h     - pdf
 %
+%     EXAMPLE
+%     p = 8;
+%     x = randn(50000,p);
+%     U = sphere.spatialSign(x);
+%     u0 = sphere.spatialSign(randn(1,p));
+%     dx = 0.05; xx = 0:dx:pi;
+%     n = histc(acos(U*u0'),xx);
+%     hold on
+%     bar(xx,n./sum(n),'histc');
+%     plot(xx,sphere.rppdf(xx,p)*dx,'m')
+% 
+%     f = @(x) sphere.rppdf(x,p);
+%     integral(f,0,pi)
+%
 %     REFERENCE
 %     Cai, T et al (2013). Distribution of angles in random packing on
-%     spheres. J of Machine Learning Research 14: 1837-1864.
+%       spheres. J of Machine Learning Research 14: 1837-1864.
 %
 %     SEE ALSO
-%     rp
+%     rp, rpcdf
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found on GitHub:
@@ -39,5 +53,8 @@
 
 function h = rppdf(theta,p)
 
+assert(all(theta>=0)&&all(theta<=pi),'theta must be 0<=theta<=pi.');
+assert((mod(p,1)==0)&&(p>1),'p must be integer > 0.');
+
 h = (1/sqrt(pi)) * (gamma(p/2)/(gamma((p-1)/2)))*...
-   (sin(theta).^(p-2));
+    (sin(theta).^(p-2));

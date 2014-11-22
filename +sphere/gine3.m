@@ -7,13 +7,14 @@
 %         the data should already be projected to the unit hypersphere
 %
 %     OUTPUTS
-%     G - statistic
+%     pval - p-value
+%     Fn - statistic
 %
 %     REFERENCE
 %     Mardia, KV, Jupp, PE (2000). Directional Statistics. John Wiley
 %
 %     SEE ALSO
-%     spheresign
+%     uniSphereTest, spatialSign
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found on GitHub:
@@ -32,10 +33,16 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function Fn = gine3(U)
+function [pval,Fn] = gine3(U)
 
 [n,p] = size(U);
+
+if p ~= 3
+   error('Only valid for p = 3');
+end
 
 psi = sphere.psivec(U,n);
 % eq. 10.4.8
 Fn = (3*n)/2 - (4/(n*pi)) * sum(psi + sin(psi));
+
+pval = 1 - sumchi2cdf(Fn,3);

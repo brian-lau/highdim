@@ -1,4 +1,4 @@
-% RP                          Random projection statistic for spherical uniformity 
+% RP                          Random projection stat for spherical uniformity 
 % 
 %     stat = rp(U,k)
 %
@@ -11,13 +11,13 @@
 %     stat - [n x k] vector of of angles between data and k random vectors
 %
 %     REFERENCE
-%     Cuesta-Albertos, JA et al (2009). On projection-based tests for directional 
-%       and compositional data. Stat Comput 19: 367-380
-%     Cuesta-Albertos, JA et al (2007). A sharp form of the Cramer?Wold theorem. 
-%       J Theor Probab 20: 201?209
+%     Cuesta-Albertos, JA et al (2009). On projection-based tests for 
+%       directional and compositional data. Stat Comput 19: 367-380
+%     Cuesta-Albertos, JA et al (2007). A sharp form of the Cramer-Wold 
+%       theorem. J Theor Probab 20: 201-209
 %
 %     SEE ALSO
-%     spheresign
+%     uniSphereTest, spatialSign
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found on GitHub:
@@ -41,7 +41,7 @@ function stat = rp(U,k)
 [n,p] = size(U);
 
 % Uniform random directions
-u0 = spheresign(randn(k,p));
+u0 = sphere.spatialSign(randn(k,p));
 stat = zeros(n,k);
 
 for i = 1:k

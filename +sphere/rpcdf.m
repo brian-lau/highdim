@@ -10,7 +10,7 @@
 %     dx    - resolution (default = 0.001);
 %
 %     OUTPUTS
-%     h     - pdf
+%     h     - cdf
 %
 %     REFERENCE
 %     Cai, T et al (2013). Distribution of angles in random packing on

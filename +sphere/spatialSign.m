@@ -1,6 +1,6 @@
-% SPHERESIGN                  Project onto unit hypersphere
+% SPATIALSIGN                 Project onto unit hypersphere
 % 
-%     U = spheresign(x)
+%     U = spatialSign(x)
 %
 %     INPUTS
 %     x - [n x p] matrix, p being data-dimensionality
@@ -25,7 +25,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function U = spheresign(x)
+function U = spatialSign(x)
 
 U = bsxfun(@rdivide,x,sqrt(sum(x.^2,2)));
 U(isnan(U)) = 0;

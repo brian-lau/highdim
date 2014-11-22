@@ -8,13 +8,13 @@
 %     n - number of samples
 %
 %     OUTPUTS
-%     psi - p-value
+%     psi - vector from psi matrix (U*U'), i < j
 %
 %     REFERENCE
 %     Mardia, KV, Jupp, PE (2000). Directional Statistics. John Wiley   
 %
 %     SEE ALSO
-%     spheresign
+%     gine, gine3, ajne, gineajne
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found on GitHub:

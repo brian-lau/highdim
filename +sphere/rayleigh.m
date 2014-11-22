@@ -1,21 +1,24 @@
 % RAYLEIGH                    Rayleigh statistic for spherical uniformity 
 % 
-%     Rnp = rayleigh(U)
+%     R = rayleigh(U)
 %
 %     Most powerful invariant test against von Mises alternative.
+%     Not consistent against alternatives with zero resultant length
+%     (Mardia & Jupp, pg 209).
 %
 %     INPUTS
 %     U - [n x p] matrix, n samples with dimensionality p
 %         the data should already be projected to the unit hypersphere
 %
 %     OUTPUTS
-%     Rnp - statistic
+%     pval - p-value
+%     R - statistic
 %
 %     REFERENCE
 %     Mardia, KV, Jupp, PE (2000). Directional Statistics. John Wiley
 %
 %     SEE ALSO
-%     spheresign
+%     uniSphereTest, spatialSign
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found on GitHub:
@@ -34,15 +37,17 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function Rnp = rayleigh(U)
+function [pval,R] = rayleigh(U)
 
 [n,p] = size(U);
 
 if 0
-   Rnp = (p/n)*sum(sum(U*U'));
+   R = (p/n)*sum(sum(U*U'));
 else
    % Modified Rayleigh test statistic (Mardia & Jupp, eq. 10.4.6)
    Ubar = mean(U);
    T = n*p*sum(Ubar.^2);
-   Rnp = (1-1/(2*n))*T + (1/(2*n*(p+2)))*T^2;
+   R = (1-1/(2*n))*T + (1/(2*n*(p+2)))*T^2;
 end
+
+pval = 1 - chi2cdf(R,p);
