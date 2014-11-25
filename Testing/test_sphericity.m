@@ -1,5 +1,8 @@
+% Zou et al (2014). Multivariate sign-based high-dimensional tests for
+%   sphericity. Biometrika 101: 229-236
 
-
+% bias-corrected sign test
+% Check null distribution approximation
 n = 1000;
 p1 = zeros(n,1);
 s1 = zeros(n,1);
@@ -25,14 +28,14 @@ bar(xx,n./sum(n),'histc');
 plot(xx,normpdf(xx)*dx,'m');
 title('exact');
 
-
-
-n = 10000;
+% Standard sign test
+% Check null distribution approximation
+n = 1000;
 p = zeros(n,1);
 s = zeros(n,1);
 for i = 1:n
    x = randn(10,3);
-   [p(i),s(i)] = sphereTest(x);
+   [p(i),s(i)] = sphereTest(x,'test','sign');
 end
 
 figure;

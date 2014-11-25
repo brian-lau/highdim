@@ -1,9 +1,9 @@
-% reproduce table 1 from
+%% Compare bias-corrected sign test size & power with table 1 from
 % Zou et al (2014). Multivariate sign-based high-dimensional tests for
 %   sphericity. Biometrika 101: 229-236
 
-n = [40 80];%[20 40 60 80];
-p = [55 181 642];%[38 55 89 181 331 642];
+n = [40 80];
+p = [55 181 642];
 reps = 2000;
 v = [0 0.125 0.250];
 
