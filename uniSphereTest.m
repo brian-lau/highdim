@@ -5,14 +5,31 @@
 %     INPUTS
 %     x    - [n x p] matrix, n samples with dimensionality p
 %
-%     OPTIONAL
-%     test - 
+%     OPTIONAL (name/value pairs)
+%     test - 'rayleigh' - Rayleigh test, parametric (DEFAULT)
+%            'gine' - Gine test
+%            'gine3' - Gine test with fast approximation for p = 3
+%            'bingham' - Bingham test
+%            'gine-ajne' - Weight Gine/Ajne test, non-parametric
+%            'rp' - Random projection test, non-parametric
 %
 %     OUTPUTS
 %     pval - p-value
 %     stat - statistic
 %
+%     EXAMPLE
+%     sigma = diag([1 5 1]);
+%     x = (sigma*randn(50,3)')';
+%     % Note failure of Rayleigh test, since resultant is zero
+%     pval = uniSphereTest(x,'r') % Rayleigh
+%     pval = uniSphereTest(x,'ga') % Gine-Ajne
+%     pval = uniSphereTest(x,'rp') % Random projection
+%     pval = uniSphereTest(x,'b') % Bingham
+%
 %     REFERENCE
+%     Mardia, KV, Jupp, PE (2000). Directional Statistics. John Wiley
+%     Prentice, MJ (1978). On invariant tests of uniformity for directions
+%       and orientations. Annals of Statistics 6: 169-176.
 %
 %     SEE ALSO
 %     sphereTest
