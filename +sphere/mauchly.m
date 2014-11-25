@@ -22,11 +22,10 @@ else
    omega = omega / (288*p^2*n^2*rho^2);
    
    lL = -2*rho*log(L);
-   try
-   Pf = 1 - chi2cdf(lL,f);
-   Pf4 = 1 - chi2cdf(lL,f+4);
-   pval = Pf + omega*(Pf4 - Pf);
-   catch, keyboard; end
+   Pf = chi2cdf(lL,f);
+   Pf4 = chi2cdf(lL,f+4);
+   P = Pf + omega*(Pf4 - Pf);
+   pval = max(0,1 - P);
 end
 
 if nargout == 2

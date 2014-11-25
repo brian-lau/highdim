@@ -1,14 +1,17 @@
-% RP                          Random projection stat for spherical uniformity 
+% RPTEST               Random projection test for uniformity on unit hypersphere 
 % 
-%     stat = rp(U,k)
+%     [pval,stat] = rptest(U,varargin)
 %
 %     INPUTS
 %     U - [n x p] matrix, n samples with dimensionality p
 %         the data should already be projected to the unit hypersphere
-%     k - number of random vectors to project onto
+%
+%     OPTIONAL
+%     test - 
 %
 %     OUTPUTS
-%     stat - [n x k] vector of of angles between data and k random vectors
+%     pval - p-value
+%     stat - statistic, projections onto k random p-vectors
 %
 %     REFERENCE
 %     Cuesta-Albertos, JA et al (2009). On projection-based tests for 
@@ -17,7 +20,7 @@
 %       theorem. J Theor Probab 20: 201-209
 %
 %     SEE ALSO
-%     uniSphereTest, spatialSign
+%     uniSphereTest, rp, rppdf, rpcdf
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:
@@ -36,14 +39,45 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function stat = rp(U,k)
+function [pval,stat] = rptest(U,varargin)
+
+import sphere.*
+
+par = inputParser;
+addRequired(par,'U',@isnumeric);
+addParamValue(par,'correction','fdr',@ischar);
+addParamValue(par,'nmc',2000,@isnumeric);
+addParamValue(par,'k',20,@isnumeric);
+addParamValue(par,'dist','empirical',@ischar);
+parse(par,U,varargin{:});
+k = par.Results.k;
 
 [n,p] = size(U);
+stat = rp(U,k);
 
-% Uniform random directions
-u0 = sphere.spatialSign(randn(k,p));
-stat = zeros(n,k);
-
-for i = 1:k
-   stat(:,i) = acos(U*u0(i,:)');
+switch lower(par.Results.dist)
+   case 'asymp'
+      pval = zeros(k,1);
+      for i = 1:k
+         test_cdf = [ stat(:,i) , rpcdf(stat(:,i),p)];
+         [~,pval(i)] = kstest(stat(:,i),'CDF',test_cdf);
+      end
+   otherwise % empirical
+      Umc = spatialSign(randn(par.Results.nmc,p));
+      u0 = spatialSign(randn(1,p));
+      Ymc = acos(Umc*u0');
+      pval = zeros(k,1);
+      for i = 1:k
+         [~,pval(i)] = kstest2(stat(:,i),Ymc);
+      end
 end
+
+switch lower(par.Results.correction)
+   case 'bonferroni'
+      adj_p = pval*k;
+   case 'fdr'
+      [~,~,adj_p] = fdr_bh(pval,.05,'pdep');
+   otherwise
+      error('Invalid p-value correction');
+end
+pval = min(adj_p);

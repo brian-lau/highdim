@@ -4,9 +4,9 @@
 %
 %     Tests whether the covariance matrix of a sample X1, ..., Xn from a 
 %     p-dimensional multivariate distribution is proportional to the identity.
-%     The test is the locally most powerful invariant test for sphericity,
+%     This test is the locally most powerful invariant test for sphericity,
 %     is n-consistent, and remains valid even when n and p grow together
-%     (method='john' or 'nagao'), and the n,p-consistent variant
+%     (method='john' or 'nagao'). Moreover, the n,p-consistent variant
 %     (method = 'wang') only requires the existence of fourth moments.
 %
 %     INPUTS
@@ -20,7 +20,7 @@
 %
 %     OUTPUTS
 %     pval - p-value
-%     stat - corresponding statistic
+%     stat - statistic
 %
 %     REFERENCE
 %     Ledoit & Wolf (2002). Some hypothesis tests for the covariance matrix
@@ -33,8 +33,8 @@
 %     sphereTest
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
-%     The full license and most recent version of the code can be found on GitHub:
-%     https://github.com/brian-lau/spheretest
+%     The full license and most recent version of the code can be found at:
+%     https://github.com/brian-lau/highdim
 %
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by

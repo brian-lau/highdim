@@ -1,7 +1,7 @@
 %% Compare bias-corrected sign test size & power with table 1 from
 % Zou et al (2014). Multivariate sign-based high-dimensional tests for
 %   sphericity. Biometrika 101: 229-236
-
+clear all;
 n = [40 80];
 p = [55 181 642];
 reps = 2000;
@@ -16,8 +16,7 @@ for i = 1:numel(n)
             vp = round(v(k)*p(j));
             A = [sqrt(2)*ones(vp,1) ; ones(p(j)-vp,1)];
             x = (diag(A)*y')';
-            pval(m) = sphereTest(x,'test','bcs','approx',true);
-            %pval(m) = sphereTest(x,'test','bcs','approx',false);
+            pval(m) = sphereTest(x,'bcs');
          end
          prob(i,j,k) = mean(pval<=0.05);
       end

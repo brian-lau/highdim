@@ -2,8 +2,8 @@
 % 
 %     h = rppdf(theta,p)
 %
-%     The distribution of pairwise angles between vectors X1,...,Xn 
-%     that are random points independently chosen with the uniform distribution 
+%     The distribution of pairwise angles between vectors X1,...,Xn that 
+%     are random points independently chosen with the uniform distribution 
 %     on S^(p-1), the unit sphere in R^p.
 %
 %     INPUTS
@@ -24,8 +24,7 @@
 %     bar(xx,n./sum(n),'histc');
 %     plot(xx,sphere.rppdf(xx,p)*dx,'m')
 % 
-%     f = @(x) sphere.rppdf(x,p);
-%     integral(f,0,pi)
+%     integral(@(x) sphere.rppdf(x,p),0,pi)
 %
 %     REFERENCE
 %     Cai, T et al (2013). Distribution of angles in random packing on
@@ -35,8 +34,8 @@
 %     rp, rpcdf
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
-%     The full license and most recent version of the code can be found on GitHub:
-%     https://github.com/brian-lau/spheretest
+%     The full license and most recent version of the code can be found at:
+%     https://github.com/brian-lau/highdim
 %
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by

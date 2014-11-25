@@ -1,5 +1,6 @@
 %% Check the 95th percentiles of the statistics under uniformity
 
+%% Gine & Bingham
 n = [10 30 50 100 150];
 p = [10 20 30 40 50 100];
 reps = 500;

@@ -18,8 +18,8 @@
 %     sphereTest
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
-%     The full license and most recent version of the code can be found on GitHub:
-%     https://github.com/brian-lau/spheretest
+%     The full license and most recent version of the code can be found at:
+%     https://github.com/brian-lau/highdim
 %
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
@@ -47,14 +47,12 @@ elseif rem(nargin,2) == 0
 end
 
 par = inputParser;
+par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addParamValue(par,'test','rayleigh',@ischar);
 addParamValue(par,'nboot',1000,@isnumeric);
-addParamValue(par,'k',25,@isnumeric);
-addParamValue(par,'dist','boot',@ischar);
 parse(par,x,varargin{:});
 nboot = par.Results.nboot;
-k = par.Results.k;
 
 [n,p] = size(x);
 U = spatialSign(x);
@@ -75,25 +73,8 @@ switch lower(par.Results.test)
       [pval,boot] = bootstrap('sphere.gineajne');
    case {'bingham','b'}
       [pval,stat] = bingham(U);
-   case {'rp'}
-      stat = rp(U,k);
-      switch par.Results.dist
-         case 'asymp'
-            for i = 1:k
-               test_cdf = [ stat(:,i) , rpcdf(stat(:,i),p)];
-               [~,pval(i)] = kstest(stat(:,i),'CDF',test_cdf);
-            end
-         otherwise
-            Umc = spatialSign(randn(nboot,p));
-            u0 = spatialSign(randn(1,p));
-            Ymc = acos(Umc*u0');
-            for i = 1:k
-               [~,pval(i)] = kstest2(stat(:,i),Ymc);
-            end
-      end
-      % TODO add bonferroni correction
-      [~,~,adj_p] = fdr_bh(pval,.05,'pdep');
-      pval = min(adj_p);
+   case {'randproj','rp'}
+      [pval,stat] = rptest(U,par.Unmatched);
    otherwise
       error('Unknown test.');
 end
