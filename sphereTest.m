@@ -13,6 +13,8 @@
 %     stat - corresponding statistic
 %
 %     REFERENCE
+%     Zou et al (2014). Multivariate sign-based high-dimensional tests for
+%       sphericity. Biometrika 101: 229-236
 %
 %     SEE ALSO
 %     uniSphereTest
@@ -75,8 +77,8 @@ switch par.Results.test
          % Approximation when x is multivariate normal
          deltanp = n^(-2) + 2*n^(-3);
       else
-         % FIXME: not quite working...
-         R = sqrt(sum(U.^2,2));
+         % General case (Theorem 1, Zou et al.)
+         R = sqrt(sum(bsxfun(@minus,x,theta).^2,2));
          Rstar = R + U*theta' - sum(theta.^2)./(2*R);
          erk2 = erk(Rstar,2,n);
          deltanp = (1/n^2) * (2 - 2*erk2 + erk2^2) ...
@@ -92,5 +94,5 @@ end
 
 function y = erk(Rstar,k,n)
 d = sum(1./Rstar)^k;
-y = n^(k-1) * sum( Rstar.^(-k)) ./ d;
+y = n^(k-1) * sum( Rstar.^(-k) ./ d);
 
