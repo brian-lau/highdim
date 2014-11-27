@@ -1,26 +1,26 @@
-% DCORRTEST                   Distance correlation test of independence
+% RV                          RV coefficient of dependence
 % 
-%     [pval,stat] = dcorrtest(x,y,method)
+%     [r,xx,yy] = rv(x,y,type,demean)
 %
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p
 %     y - [n x q] n samples of dimensionality q
 %
 %     OPTIONAL
-%     method - 't' indicates high-dimensional t-test, otherwise bootstrap
+%     type - 'mod' to calculate modified RV (Smiles et al), default='standard'
+%     demean - boolean indicating to subtract mean for each var, default=TRUE
 %
 %     OUTPUTS
-%     pval - p-value
-%     stat - distance correlation
+%     r  - RV coefficient
+%     xx - inner product matrix of x
+%     yy - inner product matrix of y 
 %
 %     REFERENCE
-%     Szekely et al (2007). Measuring and testing independence by correlation 
-%       of distances. Ann Statist 35: 2769-2794
-%     Szekely & Rizzo (2013). The distance correlation t-test of independence 
-%       in high dimension. J Multiv Analysis 117: 193-213
+%     Smilde et al (2009). Matrix correlations for high-dimensional data: 
+%       the modified RV-coefficient. Bioinformatics 25: 401-405
 %
 %     SEE ALSO
-%     dcorr, dcorrtest
+%     rvtest, dcorr, dcorrtest
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:
@@ -39,30 +39,34 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [pval,r,T] = dcorrtest(x,y,method)
+function [r,xx,yy] = rv(x,y,type,demean)
+
+if nargin < 4
+   demean = true;
+end
 
 if nargin < 3
-   method = 't';
+   type = '';
 end
-nboot = 1000;
 
 [n,~] = size(x);
 if n ~= size(y,1)
-   error('DCORRTEST requires x and y to have the same # of samples');
+   error('RV requires x and y to have the same # of samples');
 end
 
-switch lower(method)
-   case {'t','ttest','t-test'}
-      r = dep.dcorr(x,y,true);
-      v = n*(n-3)/2;
-      T = sqrt(v-1) * r/sqrt(1-r^2);
-      pval = 1 - tcdf(T,v-1);
-   otherwise % bootstrap unmodified 
-      r = dep.dcorr(x,y);
-      boot = zeros(nboot,1);
-      for i = 1:nboot
-         ind = randperm(n);
-         boot(i) = dep.dcorr(x,y(ind,:));
-      end
-      pval = sum(boot>=r)/nboot;
+if demean
+   x = bsxfun(@minus,x,mean(x));
+   y = bsxfun(@minus,y,mean(y));
+end
+xx = x*x';
+yy = y*y';
+
+switch lower(type)
+   case {'mod'}
+      dind = 1:(n+1):n*n;
+      xx(dind) = xx(dind) - diag(xx);
+      yy(dind) =  yy(dind) - diag(yy);
+      r = trace(xx*yy) / sqrt(trace(xx^2)*trace(yy^2));
+   otherwise
+      r = trace(xx*yy) / sqrt(trace(xx^2)*trace(yy^2));
 end

@@ -3,11 +3,11 @@
 %     [d,dvx,dvy] = dcov(x,y,modified)
 %
 %     INPUTS
-%     x
-%     y
+%     x - [n x p] n samples of dimensionality p
+%     y - [n x q] n samples of dimensionality q
 %
 %     OPTIONAL
-%     modified - boolean indicating bias-correction (default=false)
+%     correct - boolean indicating bias-correction (default=false)
 %
 %     OUTPUTS
 %     d - distance covariance between x,y
@@ -40,10 +40,10 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [d,dvx,dvy] = dcov(x,y,modified)
+function [d,dvx,dvy] = dcov(x,y,correct)
 
 if nargin < 3
-   modified = false;
+   correct = false;
 end
 
 [n,~] = size(x);
@@ -60,13 +60,7 @@ B = bsxfun(@minus,b,mean(b));
 B = bsxfun(@minus,B,mean(b,2));
 B = bsxfun(@plus,B,mean(mean(b)));
 
-if ~modified
-   d = dv(A.*B,n);
-   if nargout > 1
-      dvx = dv(A.*A,n);
-      dvy = dv(B.*B,n);
-   end
-else
+if correct
    Astar = (n/(n-1)) * (A - a/n);
    Astar(1:(n+1):n*n) = (n/(n-1)) * (mean(a) - mean(mean(a)));
    Bstar = (n/(n-1)) * (B - b/n);
@@ -77,12 +71,18 @@ else
       dvx = dvmod(Astar,Astar,n);
       dvy = dvmod(Bstar,Bstar,n);
    end
+else
+   d = dv(A.*B,n);
+   if nargout > 1
+      dvx = dv(A.*A,n);
+      dvy = dv(B.*B,n);
+   end
 end
 
 % Sample distance variances
 function z = dv(x,n)
-%z = sqrt(sum(sum(x))/n^2);
-z = sum(sum(x))/n^2;
+z = sqrt(sum(sum(x))/n^2);
+%z = sum(sum(x))/n^2;
 
 function z = dvmod(x,y,n)
 U = x.*y;

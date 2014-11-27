@@ -3,11 +3,11 @@
 %     d = dcorr(x,y,modified)
 %
 %     INPUTS
-%     x
-%     y
+%     x - [n x p] n samples of dimensionality p
+%     y - [n x q] n samples of dimensionality q
 %
 %     OPTIONAL
-%     modified - boolean indicating bias-correction (default=false)
+%     correct - boolean indicating bias-correction (default=false)
 %
 %     OUTPUTS
 %     d - distance covariance between x,y
@@ -38,16 +38,16 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function d = dcorr(x,y,modified)
+function d = dcorr(x,y,correct)
 
 if nargin < 3
-   modified = false;
+   correct = false;
 end
 
-if modified
+if correct
    [d,dvx,dvy] = dep.dcov(x,y,true);
    d = d/sqrt(dvx*dvy);
 else
    [d,dvx,dvy] = dep.dcov(x,y,false);
-   d = sqrt(d/sqrt(dvx*dvy));
+   d = d/sqrt(dvx*dvy);
 end
