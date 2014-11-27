@@ -7,11 +7,13 @@
 %     y - [n x q] n samples of dimensionality q
 %
 %     OPTIONAL
-%     method - 't' indicates high-dimensional t-test, otherwise bootstrap
+%     method - 't' indicates t-test from Szekely & Rizzo (2013), 
+%              otherwise bootstrap (default = 't')
+%     nboot - # bootstrap samples
 %
 %     OUTPUTS
 %     pval - p-value
-%     stat - distance correlation
+%     r    - distance correlation, corrected if method = 't' (default)
 %
 %     REFERENCE
 %     Szekely et al (2007). Measuring and testing independence by correlation 
@@ -39,12 +41,15 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [pval,r,T] = dcorrtest(x,y,method)
+function [pval,r,T] = dcorrtest(x,y,method,nboot)
+
+if nargin < 4
+   nboot = 1000;
+end
 
 if nargin < 3
    method = 't';
 end
-nboot = 1000;
 
 [n,~] = size(x);
 if n ~= size(y,1)

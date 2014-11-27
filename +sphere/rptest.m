@@ -1,4 +1,4 @@
-% RPTEST               Random projection test for uniformity on unit hypersphere 
+% RPTEST               Random projection test for spherical uniformity 
 % 
 %     [pval,stat] = rptest(U,varargin)
 %

@@ -82,7 +82,6 @@ end
 % Sample distance variances
 function z = dv(x,n)
 z = sqrt(sum(sum(x))/n^2);
-%z = sum(sum(x))/n^2;
 
 function z = dvmod(x,y,n)
 U = x.*y;

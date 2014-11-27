@@ -20,6 +20,15 @@
 %     pval - p-value
 %     stat - statistic
 %
+%     EXAMPLE
+%     sigma = diag([ones(1,25),0.5*ones(1,5)]);
+%     x = (sigma*randn(50,30)')';
+%     [pval,stat] = sphereTest(x,'john')
+%     [pval,stat] = sphereTest(x,'nagao')
+%     [pval,stat] = sphereTest(x,'wang')
+%     [pval,stat] = sphereTest(x,'sign')
+%     [pval,stat] = sphereTest(x,'bcs')
+%
 %     REFERENCE
 %     Wang, Q and Yao J (2013). On the sphericity test with large-dimensional
 %       observations. Electronic Journal of Statistics 7: 2164-2192

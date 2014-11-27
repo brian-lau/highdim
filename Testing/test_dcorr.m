@@ -1,6 +1,10 @@
+
+%% Table 1 from
+%     Szekely & Rizzo (2013). The distance correlation t-test of independence 
+%       in high dimension. J Multiv Analysis 117: 193-213
 n = 30;
 p = [1 2 4 8 16 32 64];
-reps = 100;
+reps = 1000;
 
 for i = 1:numel(p)
    for j = 1:reps
@@ -24,7 +28,16 @@ end
 % Bias corrected dcor 
 %            0.942809 
 
+% energy package 1.6.2
 % > dcov(c(1,2,3,4),c(1,1,2,6))
 % [1] 1.118034
 % > dcor(c(1,2,3,4),c(1,1,2,6))
 % [1] 0.8947853
+% > dcor(c(1,2,3),c(.5,2,3.4))
+% [1] 0.9998217
+% > dcor(c(-11,2,3),c(.5,2,3.4))
+% [1] 0.9206351
+% > dcov(c(1,2,3),c(.5,2,3.4))
+% [1] 0.846197
+% > dcov(c(-11,2,3),c(.5,2,3.4))
+% [1] 2.258591

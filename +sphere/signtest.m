@@ -1,4 +1,4 @@
-% SIGNTEST                  Nonparametric test if data is spherically distributed
+% SIGNTEST                  Nonparametric test for sphericity
 % 
 %     [pval,stat] = signtest(x,method,approx)
 %
