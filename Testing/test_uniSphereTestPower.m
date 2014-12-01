@@ -21,12 +21,16 @@ for i = 1:numel(kappa)
    for j = 1:numel(p)
       for k = 1:reps
          x = randvonMisesFisherm(p(j),n,kappa(i))';
+         
+         % with noise
          %x = [randn(n,p(j)) ; randvonMisesFisherm(p(j),n,kappa(i))'];
          
+% antipodally symmetric
 %          mu = zeros(1,p(j));
 %          mu(end) = 1;
 %          x = [randvonMisesFisherm(p(j),n/2,kappa(i),mu)' ;...
 %             randvonMisesFisherm(p(j),n/2,kappa(i),-mu)'];
+% mixture of vmf
 %          mu = zeros(1,p(j));
 %          mu(end) = 1;
 %          x = [randvonMisesFisherm(p(j),n/3,kappa(i),mu)' ;...

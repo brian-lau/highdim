@@ -1,15 +1,23 @@
 % UNISPHERETEST               Test if data is uniformly distributed on unit hypersphere 
 % 
+%     Given a sample X1,...,Xn from a p-dimensional multivariate distribution,
+%     test the hypothesis:
+%
+%     H0 : Sample is uniformly distributed on the unit hypersphere (S_{p-1})
+%     
+%     using the following tests,
+%        'rayleigh' - Rayleigh test, parametric (default)
+%        'gine' - Gine test
+%        'gine3' - Gine test with fast approximation for p = 3
+%        'bingham' - Bingham test
+%        'gine-ajne' - Weighted Gine/Ajne test, non-parametric
+%        'randproj' - Random projection test, non-parametric
+%
 %     PROPERTIES
 %     x     - [n x p] matrix, n samples with dimensionality p
 %     n     - # of samples
 %     p     - # of dimensions
-%     test  - 'rayleigh' - Rayleigh test, parametric (default)
-%             'gine' - Gine test
-%             'gine3' - Gine test with fast approximation for p = 3
-%             'bingham' - Bingham test
-%             'gine-ajne' - Weighted Gine/Ajne test, non-parametric
-%             'randproj' - Random projection test, non-parametric
+%     test  - string (see above, default = 'rayleigh')
 %     params  -
 %     alpha   - alpha level (default = 0.05)
 %     stat    - corresponding statistic
@@ -27,6 +35,10 @@
 %     UniSphereTest(x,'bingham') 
 %
 %     REFERENCE
+%     Cai, T et al (2013). Distribution of angles in random packing on
+%       spheres. J of Machine Learning Research 14: 1837-1864.
+%     Cuesta-Albertos, JA et al (2009). On projection-based tests for 
+%       directional and compositional data. Stat Comput 19: 367-380
 %     Mardia, KV, Jupp, PE (2000). Directional Statistics. John Wiley
 %     Prentice, MJ (1978). On invariant tests of uniformity for directions
 %       and orientations. Annals of Statistics 6: 169-176.

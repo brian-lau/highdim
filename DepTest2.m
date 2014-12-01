@@ -18,6 +18,12 @@
 %        'rv' - RV coefficient
 %        'hsic' - Hilbert-Schmidt Independence Criterion
 %
+%     H0 : X and Y have the same mean
+%     
+%     using the following tests,
+%        'hotelling' - Hotelling T^2 test
+%        'randsub' - random subspace
+%
 %     PROPERTIES
 %     x       - [m x p] matrix, m samples with dimensionality p
 %     x       - [n x q] matrix, n samples with dimensionality q
@@ -34,6 +40,23 @@
 %     runtime - elapsed time for running test, in seconds
 %
 %     EXAMPLE
+%     % non-indepedent data, with ~0 correlation
+%     x = rand(200,1); y = rand(200,1);
+%     xx = 0.5*(x+y)-0.5; yy = 0.5*(x-y);
+%     corr(xx,yy)
+%     % independence test
+%     DepTest2(xx,yy,'test','dcorr')
+%     DepTest2(xx,yy,'test','hsic')
+%     % same distribution?
+%     DepTest2(xx,yy,'test','mmd')
+% 
+%     % independent data, different distribution
+%     x = randn(200,1); y = rand(200,1);
+%     % independence test
+%     DepTest2(x,y,'test','dcorr')
+%     DepTest2(x,y,'test','hsic')
+%     % same distribution?
+%     DepTest2(x,y,'test','mmd')
 %
 %     REFERENCE
 %     Gretton et al (2008). A kernel statistical test of independence. NIPS
@@ -88,9 +111,11 @@ classdef DepTest2 < hgsetget
    end
    methods
       function self = DepTest2(varargin)
-%          if (nargin == 1) || (rem(nargin,2) == 1)
-%             varargin = {'x' varargin{:}};
-%          end
+         if (nargin == 2)
+            varargin = {'x' varargin{1} 'y' varargin{2}};
+         elseif isnumeric(varargin{1}) && isnumeric(varargin{2})
+            varargin = {'x' varargin{1} 'y' varargin{2} varargin{3:end}};
+         end
          
          par = inputParser;
          par.KeepUnmatched = true;
@@ -183,7 +208,7 @@ classdef DepTest2 < hgsetget
                   dep.dcorrtest(self.x,self.y,self.params);
             case {'hsic'}
                [self.pval,self.stat] = ...
-                  dep.hsic(self.x,self.y,self.params);
+                  dep.hsictest(self.x,self.y,self.params);
             case {'rv'}
                [self.pval,self.stat] = ...
                   dep.rvtest(self.x,self.y);

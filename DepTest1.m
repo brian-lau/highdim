@@ -15,8 +15,8 @@
 %     H0 : X1,...,Xp are mutually independent
 %
 %     using the following tests,
-%        'spearman' -
-%        'kendall'  -
+%        'spearman' - 
+%        'kendall'  - 
 %
 %     PROPERTIES
 %     x     - [n x p] matrix, n samples with dimensionality p
@@ -169,6 +169,8 @@ classdef DepTest1 < hgsetget
                if isempty(self.mc)
                   [self.pval,self.stat,mc] = ...
                      dep.ranktest(self.x,'test',self.test,self.params);
+                  % Cache the monte-carlo samples, these rank-tests are
+                  % distribution free (do not depend on input distribution)
                   self.mc = mc;
                else
                   [self.pval,self.stat] = ...
