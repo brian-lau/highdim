@@ -4,15 +4,16 @@
 %   Annals of Statistics 30: 1081-1102
 
 %% Table 1
+clear all;
 n = [4 8 16 32 64 128 256];
 p = [4 8 16 32 64 128 256];
-reps = 2000;
+reps = 200;
 tic;
 for i = 1:numel(p)
    for j = 1:numel(n)
       for k = 1:reps
          x = randn(n(j),p(i));
-         pval(k) = sphere.jsn(x,'wang');
+         pval(k) = sphere.jsn(x,'test','wang');
       end
       prob(i,j) = mean(pval<=0.05);
    end
@@ -63,16 +64,17 @@ pL = [...
 %     0.0585    0.0795    0.1070    0.1135    0.1250    0.1140    0.0885
 
 %% Table 2
+clear all;
 n = [4 8 16 32 64 128 256];
 p = [4 8 16 32 64 128 256];
-reps = 2000;
+reps = 200;
 tic;
 for i = 1:numel(p)
    for j = 1:numel(n)
       for k = 1:reps
          sigma = [0.5*ones(round(p(i)/2),1);ones(p(i)-round(p(i)/2),1)]';
          x = (diag(sqrt(sigma))*randn(n(j),p(i))')';
-         pval(k) = sphere.jsn(x,'w');
+         pval(k) = sphere.jsn(x,'test','w');
       end
       prob(i,j) = mean(pval<=0.05);
    end

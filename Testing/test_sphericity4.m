@@ -10,14 +10,14 @@ p{2} = [8  16 32  64  96  112 120];
 p{3} = [16 32 64  128 192 224 240];
 p{4} = [32 64 128 256 384 448 480];
 
-reps = 2000;
+reps = 20;
 tic;
 for i = 1:numel(n)
    for j = 1:numel(p{i})
       for k = 1:reps
-         %x = gamrnd(4,1/2,n(i),p{i}(j))-2;
-         x = randn(n(i),p{i}(j));
-         pval(k) = sphere.jsn(x,'wang');
+         x = gamrnd(4,1/2,n(i),p{i}(j))-2;
+         %x = randn(n(i),p{i}(j));
+         pval(k) = sphere.jsn(x,'test','wang');
       end
       prob(i,j) = mean(pval<=0.05);
    end
@@ -74,7 +74,7 @@ n = [64 128];
 p{1} = [4  8  16  32  48  56  60];
 p{2} = [8  16 32  64  96  112 120];
 
-reps = 2500;
+reps = 250;
 tic;
 for i = 1:numel(n)
    for j = 1:numel(p{i})
@@ -84,7 +84,7 @@ for i = 1:numel(n)
          v = round(p{i}(j)/2);
          sigma = [0.5*ones(v,1);ones(p{i}(j)-v,1)]';
          x = (diag(sqrt(sigma))*x')';
-         pval(k) = sphere.jsn(x,'n');
+         pval(k) = sphere.jsn(x,'test','n');
       end
       prob(i,j) = mean(pval<=0.05);
    end

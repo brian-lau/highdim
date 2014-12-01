@@ -4,7 +4,7 @@
 %       in high dimension. J Multiv Analysis 117: 193-213
 n = 30;
 p = [1 2 4 8 16 32 64];
-reps = 1000;
+reps = 100;
 
 for i = 1:numel(p)
    for j = 1:reps
@@ -16,6 +16,10 @@ for i = 1:numel(p)
       T(j,i) = sqrt(n*(n-3)/2-1)*rstar(j,i)/sqrt(1-rstar(j,i)^2);
    end
 end
+
+mean(r)
+mean(rstar)
+mean(T)
 
 %[pval,dc] =dep.dcorrtest([1 2 3 4 5]',[1.4 1.4 3.5 4.2 4.8]')
 % dcor.ttest(c(1,2,3,4,5),c(1.4,1.4,3.5,4.2,4.8))

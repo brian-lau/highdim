@@ -1,9 +1,10 @@
 %% Check the 95th percentiles of the statistics under uniformity
 
 %% Gine & Bingham
+clear all;
 n = [10 30 50 100 150];
 p = [10 20 30 40 50 100];
-reps = 500;
+reps = 200;
 
 tic;
 for i = 1:numel(n)
@@ -41,6 +42,7 @@ pctlB-pB
 pctlG-pG
 
 %% Rayleigh & Anje
+clear all;
 n = [10 30 50 70 100 150];
 p = [10 20 30 40 50 100];
 reps = 500;

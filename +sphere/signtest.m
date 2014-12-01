@@ -1,6 +1,6 @@
-% SIGNTEST                  Nonparametric test for sphericity
+% SIGNTEST                  Nonparametric test for high-dimensional sphericity
 % 
-%     [pval,stat] = signtest(x,method,approx)
+%     [pval,stat] = signtest(x,varargin)
 %
 %     Tests whether the covariance matrix of a sample X1, ..., Xn from a 
 %     p-dimensional multivariate distribution is proportional to the identity.
@@ -10,9 +10,10 @@
 %     INPUTS
 %     x     - [n x p] matrix, n samples with dimensionality p
 %
-%     OPTIONAL
-%     method - 'sign' - standard multivariate sign, biased if p grows
-%              'bcs' - corrected sign, p can increase as n^2, (DEFAULT)
+%     OPTIONAL (name/value pairs)
+%     test - 'sign' - standard multivariate sign, biased if p grows
+%            'bcs' - corrected sign, p can increase as n^2, (DEFAULT)
+%     approx - multivariate normal approximation (DEFAULT=true)
 %
 %     OUTPUTS
 %     pval - p-value
@@ -38,22 +39,16 @@
 %     but WITHOUT ANY WARRANTY; without even the implied warranty of
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
-% 
-%     You should have received a copy of the GNU General Public License
-%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [pval,stat] = signtest(x,method,approx)
+function [pval,stat] = signtest(x,varargin)
 
 import sphere.*
 
-if nargin < 3
-   approx = true;
-end
-
-if nargin < 2
-   method = 'bcs';
-   approx = true;
-end
+par = inputParser;
+addRequired(par,'x',@isnumeric);
+addParamValue(par,'test','bcs',@ischar);
+addParamValue(par,'approx',true,@(x) isnumeric(x) || islogical(x));
+parse(par,x,varargin{:});
 
 [n,p] = size(x);
 theta = spatialMedian(x);
@@ -64,7 +59,7 @@ UtU = U*U';
 UtU(sub2ind([n n],1:n,1:n)) = 0;
 UtU = sum(UtU(:).^2);
 
-switch lower(method)
+switch lower(par.Results.test)
    case {'sign','s'}
       Q = p/n + (n*(n-1)/n^2) * (p/(n*(n-1))) * UtU - 1;
       stat = n*(p+2)*Q/2;
@@ -74,7 +69,7 @@ switch lower(method)
       Q = (p/(n*(n-1))) * UtU - 1;
       sigma0 = sqrt( 4*(p-1)/(n*(n-1)*(p+2)) );
       
-      if approx
+      if par.Results.approx
          % Approximation when x is multivariate normal
          deltanp = n^(-2) + 2*n^(-3);
       else

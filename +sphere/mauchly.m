@@ -2,10 +2,6 @@ function [pval,stat] = mauchly(x)
 
 [n,p] = size(x);
 
-% A = (n-1)*cov(x);
-% V = det(A)/((1/p)*trace(A))^p; 
-% L = V^(n/2);
-% 
 [~,D] = eig(cov(x));
 l = diag(D);
 L = ( (prod(l)^(1/p)) / (sum(l)/p) ) ^ (0.5*p*n);
@@ -31,3 +27,8 @@ end
 if nargout == 2
    stat = lL;
 end
+
+% % Alternative definitions of L
+% A = (n-1)*cov(x);
+% V = det(A)/((1/p)*trace(A))^p; 
+% L = V^(n/2);

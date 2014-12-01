@@ -7,9 +7,9 @@
 %     y - [n x q] n samples of dimensionality q
 %
 %     OPTIONAL
-%     method - 't' indicates t-test from Szekely & Rizzo (2013), 
+%     test - 't' indicates t-test from Szekely & Rizzo (2013), 
 %              otherwise bootstrap (default = 't')
-%     nboot - # bootstrap samples
+%     nboot - # bootstrap samples if not t-test
 %
 %     OUTPUTS
 %     pval - p-value
@@ -37,26 +37,22 @@
 %     but WITHOUT ANY WARRANTY; without even the implied warranty of
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
-% 
-%     You should have received a copy of the GNU General Public License
-%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [pval,r,T] = dcorrtest(x,y,method,nboot)
+function [pval,r,T] = dcorrtest(x,y,varargin)
 
-if nargin < 4
-   nboot = 1000;
-end
-
-if nargin < 3
-   method = 't';
-end
+par = inputParser;
+addRequired(par,'x',@isnumeric);
+addRequired(par,'y',@isnumeric);
+addParamValue(par,'test','t',@ischar);
+addParamValue(par,'nboot',1000,@(x) isnumeric(x) && isscalar(x));
+parse(par,x,y,varargin{:});
 
 [n,~] = size(x);
 if n ~= size(y,1)
    error('DCORRTEST requires x and y to have the same # of samples');
 end
 
-switch lower(method)
+switch lower(par.Results.test)
    case {'t','ttest','t-test'}
       r = dep.dcorr(x,y,true);
       v = n*(n-3)/2;
@@ -64,6 +60,7 @@ switch lower(method)
       pval = 1 - tcdf(T,v-1);
    otherwise % bootstrap unmodified 
       r = dep.dcorr(x,y);
+      nboot = par.Results.nboot;
       boot = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);

@@ -1,20 +1,15 @@
-% GINE3                       Gine statistic for spherical uniformity (p=3)
+% RBF                         Kernel matrix using Gaussian radial basis
 % 
-%     Fn = gine3(U)
+%     k = rbf(sigma,x,y)
 %
 %     INPUTS
-%     U - [n x 3] matrix, n samples with dimensionality 3
-%         the data should already be projected to the unit hypersphere
+%     x - [m x p] m samples of dimensionality p
+%
+%     OPTIONAL
+%     y - [n x p] n samples of dimensionality p
 %
 %     OUTPUTS
-%     pval - p-value
-%     Fn - statistic
-%
-%     REFERENCE
-%     Mardia, KV, Jupp, PE (2000). Directional Statistics. John Wiley
-%
-%     SEE ALSO
-%     uniSphereTest, spatialSign
+%     k - kernel matrix
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:
@@ -30,16 +25,16 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-function [pval,Fn] = gine3(U)
+function k = rbf(sigma,x,y)
 
-[n,p] = size(U);
-
-if p ~= 3
-   error('Only valid for p = 3');
+xq = sum(x.*x,2);
+if nargin == 2
+   k = bsxfun(@plus,xq,xq') - 2*x*x';
+else
+   yq = sum(y.*y,2);
+   k = bsxfun(@plus,xq,yq') - 2*x*y';
 end
+k = exp(-k/(2*sigma^2));
 
-psi = sphere.psivec(U,n);
-% eq. 10.4.8
-Fn = (3*n)/2 - (4/(n*pi)) * sum(psi + sin(psi));
-
-pval = 1 - sphere.sumchi2cdf(Fn,3);
+% % one-liner scales poorly
+% k = exp(-pdist2(x,y).^2/2*sigma^2);

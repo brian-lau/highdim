@@ -1,6 +1,6 @@
-% JSN                  John, Sugiura, Nagao test of sphericity
+% JSN                  John, Sugiura, Nagao test of high-deminsional sphericity
 % 
-%     [pval,stat] = jsn(x,method)
+%     [pval,stat] = jsn(x,varargin)
 %
 %     Tests whether the covariance matrix of a sample X1, ..., Xn from a 
 %     p-dimensional multivariate distribution is proportional to the identity.
@@ -12,9 +12,8 @@
 %     INPUTS
 %     x    - [n x p] matrix, n samples with dimensionality p
 %
-%     OPTIONAL
-%     test - one of
-%            'john' - fixed p, n goes to infinity (DEFAULT)
+%     OPTIONAL (name/value pairs)
+%     test - 'john' - fixed p, n goes to infinity (DEFAULT)
 %            'nagao' - Box-Bartlett like refinements to asymptotic dist
 %            'wang' - p,n -> inf, p/n -> y>0, universal
 %
@@ -45,15 +44,13 @@
 %     but WITHOUT ANY WARRANTY; without even the implied warranty of
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
-% 
-%     You should have received a copy of the GNU General Public License
-%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [pval,stat] = jsn(x,method)
+function [pval,stat] = jsn(x,varargin)
 
-if nargin < 2
-   method = 'john';
-end
+par = inputParser;
+addRequired(par,'x',@isnumeric);
+addParamValue(par,'test','john',@ischar);
+parse(par,x,varargin{:});
 
 [n,p] = size(x);
 
@@ -62,7 +59,7 @@ S = cov(x,0);
 U = (1/p)*trace((S/((1/p)*trace(S)) - eye(p))^2);
 T2 = (n-1)*p/2*U;
 
-switch lower(method)
+switch lower(par.Results.test)
    case {'john','j'}
       f = 0.5*p*(p+1) - 1;
       pval = 1 - chi2cdf(T2,f);

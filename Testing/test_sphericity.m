@@ -11,8 +11,8 @@ s0 = zeros(n,1);
 for i = 1:n
    %x = randn(40,100);
    x = trnd(4,40,100);
-   [p1(i),s1(i)] = sphereTest(x,'bcs','approx',false);
-   [p0(i),s0(i)] = sphereTest(x,'bcs','approx',true);
+   [p1(i),s1(i)] = sphere.signtest(x,'test','bcs','approx',false);
+   [p0(i),s0(i)] = sphere.signtest(x,'test','bcs','approx',true);
 end
 
 figure;
@@ -35,7 +35,7 @@ p = zeros(n,1);
 s = zeros(n,1);
 for i = 1:n
    x = randn(10,3);
-   [p(i),s(i)] = sphereTest(x,'test','sign');
+   [p(i),s(i)] = sphere.signtest(x,'test','sign');
 end
 
 figure;
