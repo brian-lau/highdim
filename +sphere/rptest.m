@@ -20,7 +20,7 @@
 %       theorem. J Theor Probab 20: 201-209
 %
 %     SEE ALSO
-%     uniSphereTest, rp, rppdf, rpcdf
+%     UniSphereTest, rp, rppdf, rpcdf
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:

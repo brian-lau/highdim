@@ -1,19 +1,18 @@
-% AJNE                        Ajne statistic for spherical uniformity 
+% JBLD                        Jensen-Bregman LogDet Divergence
 % 
-%     A = ajne(U)
+%     div = jbld(x,y)
 %
 %     INPUTS
-%     U - [n x p] matrix, n samples with dimensionality p
-%         the data should already be projected to the unit hypersphere
+%     x - [n x n] positive semi-definite matrix
+%     y - [n x x] positive semi-definite matrix
 %
 %     OUTPUTS
-%     A - statistic
+%     div - p-value
 %
 %     REFERENCE
-%     Mardia, KV, Jupp, PE (2000). Directional Statistics. John Wiley
-%
-%     SEE ALSO
-%     UniSphereTest, spatialSign
+%     Cherian et al (2012). Jensen-Bregman LogDet Divergence with Application 
+%       to Efficient Similarity Search for Covariance Matrices. 
+%       Trans Pattern Analysis & Machine Intelligence 
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:
@@ -29,11 +28,11 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-function A = ajne(U)
+function div = jbld(x,y)
 
-[n,p] = size(U);
+cxy = chol((x+y)/2);
+cx = chol(x);
+cy = chol(y);
+div = log(prod(diag(cxy).^2)) - log(prod(diag(cx).^2)*prod(diag(cy).^2))/2;
 
-psi = sphere.psivec(U,n);
-% eq. 10.4.10
-A = (n/4) - (1/(n*pi))*sum(psi);
-
+% div2 = log(det((x+y)/2)) - log(det(x*y))/2;

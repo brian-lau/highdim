@@ -24,7 +24,7 @@
 %       sphericity. Biometrika 101: 229-236
 %
 %     SEE ALSO
-%     uniSphereTest
+%     UniSphereTest
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:
@@ -51,7 +51,7 @@ addParamValue(par,'approx',true,@(x) isnumeric(x) || islogical(x));
 parse(par,x,varargin{:});
 
 [n,p] = size(x);
-theta = spatialMedian(x);
+theta = utils.spatialMedian(x);
 U = spatialSign(bsxfun(@minus,x,theta));
 
 % TODO, block process for n large

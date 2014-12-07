@@ -14,7 +14,7 @@
 %     Mardia, KV, Jupp, PE (2000). Directional Statistics. John Wiley
 %
 %     SEE ALSO
-%     uniSphereTest, spatialSign
+%     UniSphereTest, spatialSign
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:

@@ -17,7 +17,7 @@
 %       and orientations. Annals of Statistics 6: 169-176.
 %
 %     SEE ALSO
-%     uniSphereTest, spatialSign
+%     UniSphereTest, spatialSign
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:

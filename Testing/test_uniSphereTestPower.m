@@ -4,7 +4,7 @@ clear all;
 n = 80;% 1000];
 p = [4 8 16];%[4 10 20];
 kappa = [0 0.25 0.5 1 2 4];%[0 1 2 4];
-reps = 250;%2500;
+reps = 500;%2500;
 
 prob_r = zeros(numel(kappa),numel(p));
 prob_rp = zeros(numel(kappa),numel(p));

@@ -29,7 +29,7 @@
 %       observations. Electronic Journal of Statistics 7: 2164-2192
 %
 %     SEE ALSO
-%     sphereTest
+%     DepTest1
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:

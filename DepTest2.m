@@ -8,8 +8,8 @@
 %     
 %     using the following tests,
 %        'mmd' - Maximal Mean Discrepancy
-%        'energy'
-%        'ks'
+%        'energy' - Szekely & Rizzo energy test
+%        'ks' - Two-dimensional Kolmorogov-Smirnov test
 %
 %     H0 : X and Y are mutually independent
 %
@@ -23,6 +23,11 @@
 %     using the following tests,
 %        'hotelling' - Hotelling T^2 test
 %        'randsub' - random subspace
+%
+%     H0 : cov(X) = cov(Y)
+%     
+%     using the following tests,
+%        'covdiff' - Cai et al. test for difference in covariance matrices
 %
 %     PROPERTIES
 %     x       - [m x p] matrix, m samples with dimensionality p
@@ -107,7 +112,7 @@ classdef DepTest2 < hgsetget
    properties (Hidden=true,SetAccess=private)
       autoRun
       validTests = {'dcorr' 'rv' 'hsic'...
-         'mmd'};
+         'mmd' 'energy' 'ks' 'covdiff'};
    end
    methods
       function self = DepTest2(varargin)
@@ -215,7 +220,16 @@ classdef DepTest2 < hgsetget
             case {'mmd'}
                [self.pval,self.stat] = ...
                   diff.mmdtest(self.x,self.y,self.params);
-            otherwise
+            case{'ks'}
+               [self.pval,self.stat] = diff.kstest2d(self.x,self.y);
+            case{'hotelling'}
+               [self.pval,self.stat] = diff.hotell2(self.x,self.y);
+            case{'covdiff'}
+               [self.pval,self.stat] = diff.covtest(self.x,self.y);
+             case{'energy'}
+               [self.pval,self.stat] = ...
+                  diff.minentest(self.x,self.y,self.params);
+           otherwise
                % Never
          end
          self.runtime = toc;

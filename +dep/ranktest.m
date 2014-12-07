@@ -26,7 +26,7 @@
 %       applications to testing more structures. arXiv:1410.4179v1
 %
 %     SEE ALSO
-%     rank, DepTest
+%     rank, DepTest1
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:
