@@ -63,6 +63,9 @@ for i = 1:500
 end
 
 %% Support recovery
+% Not quite matching yet. I think this is due to a problem generating exactly
+% the same covariance matrices as Cai et al. The off diagonal terms do not fall
+% into the same range (pg 272 of paper). 
 clear all;
 p = 50;
 n = 100;
