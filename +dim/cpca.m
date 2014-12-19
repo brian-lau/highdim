@@ -3,13 +3,13 @@
 %     [Q,D,iter] = cpca(S,n,varargin)
 %
 %     INPUTS
-%     S
-%     n
+%     S - covariance matrices, [n x n x groups] matrix or cell array
+%     n - sample size for each S_i, vector or cell array
 %
 %     OPTIONAL
-%     k
-%     maxit
-%     tol
+%     k - number of common components to return (default = all)
+%     maxit - maximum number of iterations (default = 100)
+%     tol - stopping criteria (default = 1e-6)
 %
 %     OUTPUTS
 %

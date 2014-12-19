@@ -4,10 +4,10 @@
 %
 %     INPUTS
 %     x - [n x n] positive semi-definite matrix
-%     y - [n x x] positive semi-definite matrix
+%     y - [n x n] positive semi-definite matrix
 %
 %     OUTPUTS
-%     div - p-value
+%     div - Jensen-Bregman LogDet Divergence
 %
 %     REFERENCE
 %     Cherian et al (2012). Jensen-Bregman LogDet Divergence with Application 
@@ -29,6 +29,13 @@
 %     GNU General Public License for more details.
 
 function div = jbld(x,y)
+
+[m,p] = size(x);
+[n,q] = size(y);
+
+if (m~=n) || (p~=q)
+   error('x and y must be the same size');
+end
 
 cxy = chol((x+y)/2);
 cx = chol(x);

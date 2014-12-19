@@ -18,7 +18,7 @@
 %     n     - # of samples
 %     p     - # of dimensions
 %     test  - string (see above, default = 'rayleigh')
-%     params  -
+%     params  - parameters passed through for specific tests
 %     alpha   - alpha level (default = 0.05)
 %     stat    - corresponding statistic
 %     pval    - p-value

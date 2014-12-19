@@ -2,6 +2,11 @@
 % 
 %     [pval,r,rmc] = ranktest(x,varargin)
 %
+%     Given a sample X1,...,Xn from a p-dimensional multivariate distribution,
+%     test the hypothesis:
+%
+%     H0 : X1,...,Xp are mutually independent
+%
 %     INPUTS
 %     x    - [n x p] matrix, n samples with dimensionality p
 %

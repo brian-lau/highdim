@@ -2,6 +2,12 @@
 % 
 %     [pval,stat,boot] = hsictest(x,y,varargin)
 %
+%     Given a sample X1,...,Xm from a p-dimensional multivariate distribution,
+%     and a sample Y1,...,Xm from a q-dimensional multivariate distribution,
+%     test the hypothesis:
+%
+%     H0 : X and Y are mutually independent
+%
 %     INPUTS
 %     x - [m x p] m samples of dimensionality p
 %     y - [m x p] m samples of dimensionality p

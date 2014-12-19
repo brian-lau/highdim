@@ -1,7 +1,7 @@
-  % DEPTEST2                    Interface for two-sample (in)dependence tests
+% DEPTEST2                    Interface for two-sample (in)dependence tests
 %
 %     Given a sample X1,...,Xm from a p-dimensional multivariate distribution,
-%     and a sample Y1,...,Xn from a q-dimensiona multivariate distribution,
+%     and a sample Y1,...,Xn from a q-dimensional multivariate distribution,
 %     test one of the hypotheses:
 %
 %     H0 : X and Y are drawn from the same distribution

@@ -8,7 +8,7 @@ n = [60 100];
 p = [50 100 200 400 800];
 reps = 10;
 
-d = DepTest();
+d = DepTest1();
 
 tic;
 for i = 1:numel(n)
@@ -33,7 +33,7 @@ n = [60 100];
 p = [50 100 200 400 800];
 reps = 100;
 
-d = DepTest();
+d = DepTest1();
 
 tic;
 for i = 1:numel(n)
@@ -68,7 +68,7 @@ n = [60 100];
 p = [50 100 200 400 800];
 reps = 100;
 
-d = DepTest();
+d = DepTest1();
 
 tic;
 for i = 1:numel(n)

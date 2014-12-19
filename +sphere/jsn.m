@@ -2,8 +2,11 @@
 % 
 %     [pval,stat] = jsn(x,varargin)
 %
-%     Tests whether the covariance matrix of a sample X1, ..., Xn from a 
-%     p-dimensional multivariate distribution is proportional to the identity.
+%     Given a sample X1,...,Xn from a p-dimensional multivariate distribution,
+%     test the hypothesis:
+%
+%     H0 : Covariance matrix of sample is proportional to the identity
+%
 %     This test is the locally most powerful invariant test for sphericity,
 %     is n-consistent, and remains valid even when n and p grow together
 %     (method='john' or 'nagao'). Moreover, the n,p-consistent variant

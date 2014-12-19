@@ -2,14 +2,20 @@
 % 
 %     [pval,stat,boot] = mmdtest(x,y,varargin)
 %
+%     Given a sample X1,...,Xm from a p-dimensional multivariate distribution,
+%     and a sample Y1,...,Xn from a q-dimensional multivariate distribution,
+%     test the hypothesis:
+%
+%     H0 : X and Y are drawn from the same distribution
+%
 %     INPUTS
 %     x - [m x p] m samples of dimensionality p
 %     y - [n x p] n samples of dimensionality p
 %
 %     OPTIONAL
-%     nboot - # bootstrap samples, default = 1000
-%     sigma - gaussian bandwidth, default = median heuristic
-%     biased - boolean indicated biased estimator (default=false)
+%     nboot - # bootstrap samples (default = 1000)
+%     sigma - gaussian bandwidth (default = median heuristic)
+%     biased - boolean indicated biased estimator (default = false)
 %
 %     OUTPUTS
 %     pval - p-value

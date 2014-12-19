@@ -2,6 +2,15 @@
 % 
 %     [pval,stat,Mthresh] = covtest(x,y,varargin)
 %
+%     Given a sample X1,...,Xm from a p-dimensional multivariate distribution,
+%     and a sample Y1,...,Xn from a q-dimensional multivariate distribution,
+%     test one of the hypotheses:
+%
+%     H0 : cov(X) = cov(Y)
+%
+%     It is also possible to test the support of cov(x) ~= cov(y), which is
+%     controlled at family-wise error rate = alpha.
+%
 %     INPUTS
 %     x - [m x p] m samples of dimensionality p
 %     y - [n x p] n samples of dimensionality p

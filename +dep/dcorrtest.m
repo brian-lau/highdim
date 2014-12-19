@@ -2,6 +2,12 @@
 % 
 %     [pval,r,T] = dcorrtest(x,y,varargin)
 %
+%     Given a sample X1,...,Xn from a p-dimensional multivariate distribution,
+%     and a sample Y1,...,Xn from a q-dimensional multivariate distribution,
+%     test the hypothesis:
+%
+%     H0 : X and Y are mutually independent
+%
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p
 %     y - [n x q] n samples of dimensionality q
