@@ -1,6 +1,6 @@
 % DCOV                        Distance covariance
 % 
-%     [d,dvx,dvy] = dcov(x,y,modified)
+%     [d,dvx,dvy] = dcov(x,y,correct)
 %
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p

@@ -1,4 +1,4 @@
-% BINGHAM                     Bingham statistic for spherical uniformity 
+% BINGHAM                     Bingham test for spherical uniformity 
 % 
 %     [pval,B] = bingham(U)
 %

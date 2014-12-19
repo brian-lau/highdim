@@ -12,7 +12,7 @@
 %     biased - boolean indicated biased estimator (default=false)
 %
 %     OUTPUTS
-%     stat - HSIC
+%     stat - Hilbert-Schmidt Independence Criterion
 %
 %     REFERENCE
 %     Gretton et al (2008). A kernel statistical test of independence. NIPS

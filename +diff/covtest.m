@@ -1,14 +1,19 @@
 % COVTEST                     Two-sample covariance matrix test
 % 
-%     [pval,stat] = covtest(x,y)
+%     [pval,stat,Mthresh] = covtest(x,y,varargin)
 %
 %     INPUTS
 %     x - [m x p] m samples of dimensionality p
 %     y - [n x p] n samples of dimensionality p
 %
+%     OPTIONAL
+%     alpha - level for test of support cov(x) ~= cov(y) (default = 0.05)
+%
 %     OUTPUTS
 %     pval - p-value
 %     stat - statistic
+%     Mthresh - support cov(x) ~= cov(y), indicating significantly different
+%           entries at level alpha
 %
 %     REFERENCE
 %     Cai et al (2013). Two-sample covariance matrix testing and support
@@ -31,7 +36,7 @@
 
 % TODO
 %  o small sample (n<30) modification
-%  o support test
+%  x support test
 %  o row test
 
 function [pval,stat,Mthresh] = covtest(x,y,varargin)

@@ -1,4 +1,4 @@
-% DEPTEST2                    Interface for two-sample (in)dependence tests
+  % DEPTEST2                    Interface for two-sample (in)dependence tests
 %
 %     Given a sample X1,...,Xm from a p-dimensional multivariate distribution,
 %     and a sample Y1,...,Xn from a q-dimensiona multivariate distribution,

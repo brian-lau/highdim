@@ -13,14 +13,15 @@
 %
 %     OUTPUTS
 %     pval - p-value
-%     r    - maximal mean discrepancy
+%     stat - maximal mean discrepancy
+%     boot - bootstrap samples
 %
 %     REFERENCE
 %     Gretton et al (2012). A kernel two-sample test. 
 %       Journal of Machine Learning Research 13: 723-773
 %
 %     SEE ALSO
-%     mmd
+%     mmd, DepTest2
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:

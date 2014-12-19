@@ -1,6 +1,6 @@
-% GINE3                       Gine statistic for spherical uniformity (p=3)
+% GINE3                       Gine test for spherical uniformity (p=3)
 % 
-%     Fn = gine3(U)
+%     [pval,Fn] = gine3(U)
 %
 %     INPUTS
 %     U - [n x 3] matrix, n samples with dimensionality 3

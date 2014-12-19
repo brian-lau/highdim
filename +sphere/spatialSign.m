@@ -1,4 +1,4 @@
-% SPATIALSIGN                 Project onto unit hypersphere
+% SPATIALSIGN                 Project data onto unit hypersphere
 % 
 %     U = spatialSign(x)
 %

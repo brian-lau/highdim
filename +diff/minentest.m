@@ -1,6 +1,6 @@
-% minentest                  N-dimensional, 2-sample comparison of 2 distributions
+% MINENTEST                  N-dimensional, 2-sample comparison of 2 distributions
 % 
-%     [p,e_nm] = minentest(x,y,flag,nboot)
+%     [p,e_n,e_n_boot] = minentest(x,y,varargin)
 %
 %     Compares d-dimensional data from two samples using a measure based on
 %     statistical energy. The test is non-parametric, does not require binning
@@ -33,7 +33,7 @@
 %       based on distances. J Stat Planning & Infer 143: 1249-1272
 %
 %     SEE ALSO
-%     kstest2d, hotell2
+%     kstest2d, hotell2, DepTest2
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found on GitHub:

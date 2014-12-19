@@ -1,6 +1,6 @@
 % RV                          RV coefficient of dependence
 % 
-%     [r,xx,yy] = rv(x,y,type,demean)
+%     [r,xx,yy] = rv(x,y,varargin)
 %
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p
@@ -20,7 +20,7 @@
 %       the modified RV-coefficient. Bioinformatics 25: 401-405
 %
 %     SEE ALSO
-%     rvtest, dcorr, dcorrtest
+%     rvtest, dcorr, dcorrtest, DepTest2
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:

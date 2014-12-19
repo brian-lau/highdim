@@ -23,7 +23,7 @@
 %     Press et al (1992). Numerical Recipes in C, section 14.7
 %
 %     SEE ALSO
-%     minentest, hotell2
+%     minentest, hotell2, DepTest2
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found on GitHub:

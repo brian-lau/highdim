@@ -1,6 +1,6 @@
 % RAYLEIGH                    Rayleigh statistic for spherical uniformity 
 % 
-%     R = rayleigh(U)
+%     [pval,R] = rayleigh(U)
 %
 %     Most powerful invariant test against von Mises alternative.
 %     Not consistent against alternatives with zero resultant length

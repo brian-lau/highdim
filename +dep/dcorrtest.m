@@ -1,6 +1,6 @@
 % DCORRTEST                   Distance correlation test of independence
 % 
-%     [pval,stat] = dcorrtest(x,y,method)
+%     [pval,r,T] = dcorrtest(x,y,varargin)
 %
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p
@@ -14,6 +14,7 @@
 %     OUTPUTS
 %     pval - p-value
 %     r    - distance correlation, corrected if method = 't' (default)
+%     T    - t-statistic
 %
 %     REFERENCE
 %     Szekely et al (2007). Measuring and testing independence by correlation 
@@ -22,7 +23,7 @@
 %       in high dimension. J Multiv Analysis 117: 193-213
 %
 %     SEE ALSO
-%     dcorr, dcorrtest
+%     dcorr, DepTest2
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:
