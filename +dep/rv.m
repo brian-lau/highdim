@@ -6,7 +6,7 @@
 %     x - [n x p] n samples of dimensionality p
 %     y - [n x q] n samples of dimensionality q
 %
-%     OPTIONAL
+%     OPTIONAL (name/value pairs)
 %     type - 'mod' to calculate modified RV (Smiles et al), default='standard'
 %     demean - boolean indicating to subtract mean for each var, default=TRUE
 %
@@ -36,33 +36,33 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-function [r,xx,yy] = rv(x,y,type,demean)
+function [r,xx,yy] = rv(x,y,varargin)
 
-if nargin < 4
-   demean = true;
-end
-
-if nargin < 3
-   type = '';
-end
+par = inputParser;
+par.KeepUnmatched = true;
+addRequired(par,'x',@isnumeric);
+addRequired(par,'y',@isnumeric);
+addParamValue(par,'type','standard',@ischar);
+addParamValue(par,'demean',true,@islogical);
+parse(par,x,y,varargin{:});
 
 [n,~] = size(x);
 if n ~= size(y,1)
    error('RV requires x and y to have the same # of samples');
 end
 
-if demean
+if par.Results.demean
    x = bsxfun(@minus,x,mean(x));
    y = bsxfun(@minus,y,mean(y));
 end
 xx = x*x';
 yy = y*y';
 
-switch lower(type)
+switch lower(par.Results.type)
    case {'mod'}
       dind = 1:(n+1):n*n;
-      xx(dind) = xx(dind) - diag(xx);
-      yy(dind) =  yy(dind) - diag(yy);
+      xx(dind) = xx(dind)' - diag(xx);
+      yy(dind) =  yy(dind)' - diag(yy);
       r = trace(xx*yy) / sqrt(trace(xx^2)*trace(yy^2));
    otherwise
       r = trace(xx*yy) / sqrt(trace(xx^2)*trace(yy^2));
