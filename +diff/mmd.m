@@ -37,6 +37,7 @@
 function [stat,K,L,KL,sigma,biased] = mmd(x,y,varargin)
 
 par = inputParser;
+par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addRequired(par,'y',@isnumeric);
 addParamValue(par,'sigma',[],@isnumeric);

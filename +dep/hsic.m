@@ -39,6 +39,7 @@
 function [stat,K,L,sigmax,sigmay,biased] = hsic(x,y,varargin)
 
 par = inputParser;
+par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addRequired(par,'y',@isnumeric);
 addParamValue(par,'sigmax',[],@isnumeric);

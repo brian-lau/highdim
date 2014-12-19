@@ -45,6 +45,7 @@
 function [pval,r,rmc] = ranktest(x,varargin)
 
 par = inputParser;
+par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addParamValue(par,'test','spearman',@ischar);
 addParamValue(par,'empirical',false,@(x) isnumeric(x) || islogical(x));

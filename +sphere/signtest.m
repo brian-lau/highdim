@@ -45,6 +45,7 @@ function [pval,stat] = signtest(x,varargin)
 import sphere.*
 
 par = inputParser;
+par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addParamValue(par,'test','bcs',@ischar);
 addParamValue(par,'approx',true,@(x) isnumeric(x) || islogical(x));

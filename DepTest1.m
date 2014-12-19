@@ -14,9 +14,10 @@
 %
 %     H0 : X1,...,Xp are mutually independent
 %
-%     using the following tests,
-%        'spearman' - 
-%        'kendall'  - 
+%     using the following tests rank-based tests suitable for high-dimensional
+%     data
+%        'spearman' - R1 from Han & Liu (DEFAULT)
+%        'kendall'  - R2 from Han & Liu 
 %
 %     PROPERTIES
 %     x     - [n x p] matrix, n samples with dimensionality p

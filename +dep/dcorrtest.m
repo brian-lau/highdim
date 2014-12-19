@@ -41,6 +41,7 @@
 function [pval,r,T] = dcorrtest(x,y,varargin)
 
 par = inputParser;
+par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addRequired(par,'y',@isnumeric);
 addParamValue(par,'test','t',@ischar);

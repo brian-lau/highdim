@@ -23,7 +23,7 @@
 %       Journal of Machine Learning Research 13: 1393-1434
 %
 %     SEE ALSO
-%     hsic
+%     hsic, DepTest2
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found at:

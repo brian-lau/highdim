@@ -48,6 +48,7 @@
 function [pval,stat] = jsn(x,varargin)
 
 par = inputParser;
+par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addParamValue(par,'test','john',@ischar);
 parse(par,x,varargin{:});

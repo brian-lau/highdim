@@ -1,9 +1,15 @@
 % CPCA                        Common principal component analysis
 %
-%     [pval,B] = bingham(U)
-%
+%     [Q,D,iter] = cpca(S,n,varargin)
 %
 %     INPUTS
+%     S
+%     n
+%
+%     OPTIONAL
+%     k
+%     maxit
+%     tol
 %
 %     OUTPUTS
 %
@@ -31,9 +37,9 @@
 function [Q,D,iter] = cpca(S,n,varargin)
 
 par = inputParser;
+par.KeepUnmatched = true;
 addRequired(par,'S',@(x) isnumeric(x)||iscell(x));
 addRequired(par,'n',@(x) isnumeric(x)||iscell(x));
-%addParamValue(par,'method','stepwise',@ischar);
 addParamValue(par,'k',[],@isnumeric);
 addParamValue(par,'maxit',100,@(x) isnumeric(x) && isscalar(x));
 addParamValue(par,'tol',1e-6,@isnumeric);
