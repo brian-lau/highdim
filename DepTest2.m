@@ -54,6 +54,7 @@
 %     DepTest2(xx,yy,'test','hsic')
 %     % same distribution?
 %     DepTest2(xx,yy,'test','mmd')
+%     DepTest2(xx,yy,'test','energy')
 % 
 %     % independent data, different distribution
 %     x = randn(200,1); y = rand(200,1);
@@ -62,6 +63,7 @@
 %     DepTest2(x,y,'test','hsic')
 %     % same distribution?
 %     DepTest2(x,y,'test','mmd')
+%     DepTest2(x,y,'test','energy')
 %
 %     REFERENCE
 %     Gretton et al (2008). A kernel statistical test of independence. NIPS
