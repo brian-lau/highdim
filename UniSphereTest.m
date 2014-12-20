@@ -29,10 +29,10 @@
 %     sigma = diag([1 5 1]);
 %     x = (sigma*randn(50,3)')';
 %     % Note failure of Rayleigh test, since resultant is zero
-%     UniSphereTest(x,'rayleigh') 
-%     UniSphereTest(x,'gine-ajne') 
-%     UniSphereTest(x,'randproj') 
-%     UniSphereTest(x,'bingham') 
+%     UniSphereTest(x,'test','rayleigh') 
+%     UniSphereTest(x,'test','gine-ajne') 
+%     UniSphereTest(x,'test','randproj') 
+%     UniSphereTest(x,'test','bingham') 
 %
 %     REFERENCE
 %     Cai, T et al (2013). Distribution of angles in random packing on

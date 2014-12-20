@@ -82,10 +82,10 @@ sigma = diag([1 5 1]);
 x = (sigma*randn(50,3)')';
 
 % Is projection onto unit hypersphere uniformly distributed?
-UniSphereTest(x,'rayleigh') % Rayleigh test fails since resultant is zero
-UniSphereTest(x,'gine-ajne') 
-UniSphereTest(x,'randproj') 
-UniSphereTest(x,'bingham') 
+UniSphereTest(x,'test','rayleigh') % Rayleigh test fails since resultant is zero
+UniSphereTest(x,'test','gine-ajne') 
+UniSphereTest(x,'test','randproj') 
+UniSphereTest(x,'test','bingham') 
 ```
 * Cai, T et al (2013). Distribution of angles in random packing on spheres. [Journal of Machine Learning Research 14: 1837-1864](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4196685/)
 * Cuesta-Albertos, JA et al (2009). On projection-based tests for 
