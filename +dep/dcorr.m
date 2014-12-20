@@ -1,6 +1,6 @@
 % DCORR                       Distance correlation
 % 
-%     d = dcorr(x,y,modified)
+%     d = dcorr(x,y,correct)
 %
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p

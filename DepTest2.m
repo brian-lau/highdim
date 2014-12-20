@@ -37,7 +37,7 @@
 %     n       - # of y samples
 %     q       - # of y dimensions
 %     test    - string (see above, default = 'dcorr')
-%     params  - 
+%     params  - parameters passed through for specific tests
 %     alpha   - alpha level (default = 0.05)
 %     stat    - corresponding statistic
 %     pval    - p-value

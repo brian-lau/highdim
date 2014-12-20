@@ -10,13 +10,13 @@
 %        'nagao' - JSN with Box-Bartlett correction
 %        'wang'  - JSN with correction for large p
 %        'sign'  - multivariate sign, non-parametric
-%        'bcs'   - multivariate sign, correction for large p (default)
+%        'bcs'   - multivariate sign, correction for large p
 %
 %     H0 : X1,...,Xp are mutually independent
 %
 %     using the following tests rank-based tests suitable for high-dimensional
 %     data
-%        'spearman' - R1 from Han & Liu (DEFAULT)
+%        'spearman' - R1 from Han & Liu (default)
 %        'kendall'  - R2 from Han & Liu 
 %
 %     PROPERTIES
@@ -24,7 +24,7 @@
 %     n     - # of samples
 %     p     - # of dimensions
 %     test  - string (see above, default = 'bcs')
-%     params  -
+%     params  - parameters passed through for specific tests
 %     alpha   - alpha level (default = 0.05)
 %     stat    - corresponding statistic
 %     pval    - p-value
