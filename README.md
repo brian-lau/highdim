@@ -60,7 +60,7 @@ DepTest2(xx,yy,'test','energy')
 * Gretton, A et al (2012). A kernel two-sample test. [Journal of Machine Learning Research 13: 723-773](http://www.jmlr.org/papers/volume13/gretton12a/gretton12a.pdf)
 * Szekely, G et al (2007). Measuring and testing independence by correlation of distances. [Annals of Statistics 35: 2769-2794](http://projecteuclid.org/euclid.aos/1201012979)
 * Szekely, G & Rizzo, M (2013). The distance correlation t-test of independence 
-in high dimension. [Journal of Multivariate Analysis 117: 193-213](doi:10.1016/j.jmva.2013.02.012)
+in high dimension. [Journal of Multivariate Analysis 117: 193-213](http://doi:10.1016/j.jmva.2013.02.012)
 
 ```
 % Independent data, different distributions
@@ -90,6 +90,7 @@ UniSphereTest(x,'test','bingham')
 * Cai, T et al (2013). Distribution of angles in random packing on spheres. [Journal of Machine Learning Research 14: 1837-1864](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4196685/)
 * Cuesta-Albertos, JA et al (2009). On projection-based tests for 
 directional and compositional data. [Statistics & Computing 19: 367-380](http://link.springer.com/article/10.1007%2Fs11222-008-9098-3#page-1)
+* Gine, EM (1975) Invariant tests for uniformity on compact Riemannian manifolds based on Sobolev norms. [Annals of Statistics 3: 1243-1266](http://www.jstor.org/discover/10.2307/2958247)
 * Mardia, KV, Jupp, PE (2000). Directional Statistics. John Wiley
 * Prentice, MJ (1978). On invariant tests of uniformity for directions
 and orientations. [Annals of Statistics 6: 169-176](http://projecteuclid.org/euclid.aos/1176344075)
