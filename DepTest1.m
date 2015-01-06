@@ -60,7 +60,7 @@
 
 %     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
 %     The full license and most recent version of the code can be found
-%     at:help
+%     https://github.com/brian-lau/highdim
 %
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
