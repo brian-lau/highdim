@@ -9,8 +9,8 @@ exceeding the number of samples.
 # Installation
 Download [highdim](https://github.com/brian-lau/highdim/archive/master.zip) and 
 add the resulting folder to your Matlab path. 
-Folders with a `+` are packages that should not be explicitly added to your path, 
-although its [parent folder does](http://www.mathworks.com/help/matlab/matlab_oop/scoping-classes-with-packages.html#brfynt_-3).
+Folders prefixed by a `+` are packages that should not be explicitly added to your path, 
+although their [parent folder should be](http://www.mathworks.com/help/matlab/matlab_oop/scoping-classes-with-packages.html#brfynt_-3).
 
 # Examples
 The various tests are most easily accessed through three interfaces: `DepTest1`, 
@@ -54,14 +54,14 @@ xx = 0.5*(x+y)-0.5; yy = 0.5*(x-y);
 corr(xx,yy)
 
 % Two-sample Independence tests (Gretton et al, 2008; Szekely & Rizzo, 2013)
-DepTest2(xx,yy,'test','dcorr')
-DepTest2(xx,yy,'test','hsic')
+DepTest2(xx,yy,'test','dcorr') % Distance correlation t-test
+DepTest2(xx,yy,'test','hsic') % Hilbert Schmidt Independence Criterion
 
 % Do the samples come from the same distribution? (Gretton et al, 2012; Szekely et al. 2007)
-DepTest2(xx,yy,'test','mmd')
-DepTest2(xx,yy,'test','energy')
+DepTest2(xx,yy,'test','mmd') % Maximum mean discrepancy
+DepTest2(xx,yy,'test','energy') % statistical energy
 ```
-* Gretton, A et al (2008). A kernel statistical test of independence. NIPS
+* Gretton, A et al (2008). A kernel statistical test of independence. [Neural Information Processing Systems](http://papers.nips.cc/paper/3201-a-kernel-statistical-test-of-independence.pdf)
 * Gretton, A et al (2012). A kernel two-sample test. [Journal of Machine Learning Research 13: 723-773](http://www.jmlr.org/papers/volume13/gretton12a/gretton12a.pdf)
 * Szekely, G et al (2007). Measuring and testing independence by correlation of distances. [Annals of Statistics 35: 2769-2794](http://projecteuclid.org/euclid.aos/1201012979)
 * Szekely, G & Rizzo, M (2013). The distance correlation t-test of independence 
@@ -118,9 +118,9 @@ x = (sigma*randn(50,3)')';
 
 % Is projection onto unit hypersphere uniformly distributed?
 UniSphereTest(x,'test','rayleigh') % Rayleigh test fails since resultant is zero
-UniSphereTest(x,'test','gine-ajne') 
-UniSphereTest(x,'test','randproj') 
-UniSphereTest(x,'test','bingham') 
+UniSphereTest(x,'test','gine-ajne') % Weighted Gine-Ajne
+UniSphereTest(x,'test','randproj') % random projection
+UniSphereTest(x,'test','bingham') % Bingham
 ```
 * Cai, T et al (2013). Distribution of angles in random packing on spheres. [Journal of Machine Learning Research 14: 1837-1864](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4196685/)
 * Cuesta-Albertos, J et al (2009). On projection-based tests for 
