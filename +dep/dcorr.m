@@ -10,7 +10,7 @@
 %     correct - boolean indicating bias-correction (default=false)
 %
 %     OUTPUTS
-%     d - distance covariance between x,y
+%     d - distance correlation between x,y
 %
 %     REFERENCE
 %     Szekely et al (2007). Measuring and testing independence by correlation 
@@ -39,12 +39,9 @@ function d = dcorr(x,y,correct)
 
 if nargin < 3
    correct = false;
+else
+   assert(isscalar(correct),'Third input must be a scalar or boolean');
 end
 
-if correct
-   [d,dvx,dvy] = dep.dcov(x,y,true);
-   d = d/sqrt(dvx*dvy);
-else
-   [d,dvx,dvy] = dep.dcov(x,y,false);
-   d = d/sqrt(dvx*dvy);
-end
+[d,dvx,dvy] = dep.dcov(x,y,correct);
+d = d/sqrt(dvx*dvy);

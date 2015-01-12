@@ -7,7 +7,7 @@ function [R U V] = poldecomp(F)
 %
 %   See also EIG, DIAG, REPMAT
 
-% Copyright (c) 2014, Zolt??n Cs??ti
+% Copyright (c) 2014, Zoltan Csati
 % All rights reserved.
 % 
 % Redistribution and use in source and binary forms, with or without
