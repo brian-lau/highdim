@@ -10,6 +10,7 @@
 %        'gine' - Gine test
 %        'gine3' - Gine test with fast approximation for p = 3
 %        'bingham' - Bingham test
+%        'ajne' - Ajne test, non-parametric
 %        'gine-ajne' - Weighted Gine/Ajne test, non-parametric
 %        'randproj' - Random projection test, non-parametric
 %
@@ -84,6 +85,10 @@ classdef UniSphereTest < hgsetget
       validTests = {'rayleigh' 'gine' 'gine3' 'ajne' ...
          'gine-ajne' 'bingham' 'randproj'};
    end
+   properties(SetAccess = protected)
+      version = '0.1.0'
+   end
+   
    methods
       function self = UniSphereTest(varargin)
          if (nargin == 1) || (rem(nargin,2) == 1)

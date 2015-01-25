@@ -114,8 +114,12 @@ classdef DepTest2 < hgsetget
    properties (Hidden=true,SetAccess=private)
       autoRun
       validTests = {'dcorr' 'rv' 'hsic'...
-         'mmd' 'energy' 'ks' 'covdiff'};
+         'mmd' 'energy' 'hotelling' 'ks' 'covdiff'};
    end
+   properties(SetAccess = protected)
+      version = '0.1.0'
+   end
+   
    methods
       function self = DepTest2(varargin)
          if (nargin == 2)

@@ -90,13 +90,17 @@ classdef DepTest1 < hgsetget
       pval
       h
       runtime
-      mc % monte carlo samples of empirical null distribution
    end
    properties (Hidden=true,SetAccess=private)
+      mc % monte carlo samples of empirical null distribution
       autoRun
       validTests = {'spearman' 'kendall' 'sign' 'bcs' ...
          'john' 'nagao' 'wang'};
    end
+   properties(SetAccess = protected)
+      version = '0.1.0'
+   end
+   
    methods
       function self = DepTest1(varargin)
          if (nargin == 1) || (rem(nargin,2) == 1)
