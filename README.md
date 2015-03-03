@@ -12,6 +12,8 @@ add the resulting folder to your Matlab path.
 Folders prefixed by a `+` are packages that should not be explicitly added to your path, 
 although their [parent folder should be](http://www.mathworks.com/help/matlab/matlab_oop/scoping-classes-with-packages.html#brfynt_-3).
 
+The Statistics toolbox is required.
+
 # Examples
 The various tests are most easily accessed through three interfaces: `DepTest1`, 
 `DepTest2` and `UniSphereTest` for one-sample tests, two-sample tests and 
