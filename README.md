@@ -128,12 +128,12 @@ UniSphereTest(x,'test','bingham') % Bingham
 * Cuesta-Albertos, J et al (2009). On projection-based tests for 
 directional and compositional data. [Statistics & Computing 19: 367-380](http://link.springer.com/article/10.1007%2Fs11222-008-9098-3#page-1)
 * Gine, E (1975) Invariant tests for uniformity on compact Riemannian manifolds based on Sobolev norms. [Annals of Statistics 3: 1243-1266](http://www.jstor.org/discover/10.2307/2958247)
-* Mardia, K & Jupp, P (2000). Directional Statistics. John Wiley
+* Mardia, K & Jupp, P (2000). [Directional Statistics](https://books.google.fr/books?id=PTNiCm4Q-M0C&printsec=frontcover&source=gbs_ge_summary_r&cad=0#v=onepage&q&f=false). John Wiley
 * Prentice, M (1978). On invariant tests of uniformity for directions
 and orientations. [Annals of Statistics 6: 169-176](http://projecteuclid.org/euclid.aos/1176344075)
 
 Contributions
 --------------------------------
-Copyright (c) 2014 Brian Lau [brian.lau@upmc.fr](mailto:brian.lau@upmc.fr), see [LICENSE](https://github.com/brian-lau/highdim/blob/master/LICENSE)
+Copyright (c) 2015 Brian Lau [brian.lau@upmc.fr](mailto:brian.lau@upmc.fr), see [LICENSE](https://github.com/brian-lau/highdim/blob/master/LICENSE)
 
 Please feel free to [fork](https://github.com/brian-lau/highdim/fork) and contribute!
