@@ -134,6 +134,6 @@ and orientations. [Annals of Statistics 6: 169-176](http://projecteuclid.org/euc
 
 Contributions
 --------------------------------
-Copyright (c) 2015 Brian Lau [brian.lau@upmc.fr](mailto:brian.lau@upmc.fr), see [LICENSE](https://github.com/brian-lau/highdim/blob/master/LICENSE)
+Copyright (c) 2016 Brian Lau [brian.lau@upmc.fr](mailto:brian.lau@upmc.fr), see [LICENSE](https://github.com/brian-lau/highdim/blob/master/LICENSE)
 
 Please feel free to [fork](https://github.com/brian-lau/highdim/fork) and contribute!
