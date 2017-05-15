@@ -81,7 +81,7 @@ DepTest2(x,y,'test','hsic')
 DepTest2(x,y,'test','mmd')
 DepTest2(x,y,'test','energy')
 ```
-###Differences in multivariate means and covariances
+### Differences in multivariate means and covariances
 ```
 % Two high-dimensional samples with sparse difference in covariance matrix (4 entries)
 p = 50; n = 100;
@@ -134,6 +134,6 @@ and orientations. [Annals of Statistics 6: 169-176](http://projecteuclid.org/euc
 
 Contributions
 --------------------------------
-Copyright (c) 2016 Brian Lau [brian.lau@upmc.fr](mailto:brian.lau@upmc.fr), see [LICENSE](https://github.com/brian-lau/highdim/blob/master/LICENSE)
+Copyright (c) 2017 Brian Lau [brian.lau@upmc.fr](mailto:brian.lau@upmc.fr), see [LICENSE](https://github.com/brian-lau/highdim/blob/master/LICENSE)
 
 Please feel free to [fork](https://github.com/brian-lau/highdim/fork) and contribute!
