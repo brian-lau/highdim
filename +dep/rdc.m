@@ -14,8 +14,8 @@ par = inputParser;
 par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addRequired(par,'y',@isnumeric);
-addParamValue(par,'k',1.5,@isscalar);
-addParamValue(par,'s',[],@isscalar);
+addParamValue(par,'k',20,@isscalar);
+addParamValue(par,'s',1/6,@isscalar);
 addParamValue(par,'f',@sin,@(x) isa(x,'function_handle'));
 addParamValue(par,'demean',false,@islogical);
 parse(par,x,y,varargin{:});
@@ -29,11 +29,15 @@ end
 x = [tiedrank(x)/n ones(n,1)];
 y = [tiedrank(y)/n ones(n,1)];
 
-x = par.Results.f(s/size(x,2)*x*randn(size(x,2),k));
-y = par.Results.f(s/size(y,2)*y*randn(size(y,2),k));
+f = par.Results.f;
+s = par.Results.s;
+k = par.Results.k;
+x = f(s/size(x,2)*x*randn(size(x,2),k));
+y = f(s/size(y,2)*y*randn(size(y,2),k));
 
-warning off;
+warning('off','stats:canoncorr:NotFullRank');
 [~,~,r] = canoncorr([x ones(n,1)],[y ones(n,1)]);
-warning on;
+warning('on','stats:canoncorr:NotFullRank');
+
 r = r(1);
 
