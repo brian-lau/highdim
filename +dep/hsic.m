@@ -4,7 +4,7 @@
 %
 %     INPUTS
 %     x - [m x p] m samples of dimensionality p
-%     y - [m x p] m samples of dimensionality p
+%     y - [m x q] m samples of dimensionality q
 %
 %     OPTIONAL (name/value pairs)
 %     sigmax - gaussian bandwidth, default = median heuristic
@@ -49,9 +49,6 @@ parse(par,x,y,varargin{:});
 
 [m,p] = size(x);
 [n,q] = size(y);
-if p ~= q
-   error('x and y must have same dimensionality (# of columns)');
-end
 if m ~= n
    error('x and y must have same # of rows');
 end
