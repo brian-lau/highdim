@@ -74,7 +74,7 @@ switch lower(par.Results.correction)
    case 'bonferroni'
       adj_p = pval*k;
    case 'fdr'
-      [~,~,adj_p] = fdr_bh(pval,.05,'pdep');
+      [~,~,adj_p] = utils.fdr_bh(pval,.05,'pdep');
    otherwise
       error('Invalid p-value correction');
 end
