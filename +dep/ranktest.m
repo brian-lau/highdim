@@ -11,7 +11,7 @@
 %     x    - [n x p] matrix, n samples with dimensionality p
 %
 %     OPTIONAL (name/value pairs)
-%     test - 'spearman' - R1 from Han & Liu (DEFAULT)
+%     test - 'spearman' - R1 from Han & Liu (default)
 %            'kendall'  - R2 from Han & Liu 
 %     empirical - boolean to monte-carlo sample null distribution
 %                 DEFAULT=FALSE, which uses asymptotic distribution
@@ -33,7 +33,7 @@
 %     SEE ALSO
 %     rank, DepTest1
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
 %     https://github.com/brian-lau/highdim
 %

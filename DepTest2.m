@@ -7,31 +7,31 @@
 %     H0 : X and Y are drawn from the same distribution
 %     
 %     using the following tests,
-%        'mmd' - Maximal Mean Discrepancy
-%        'energy' - Szekely & Rizzo energy test
-%        'ks' - Two-dimensional Kolmorogov-Smirnov test
+%        'mmd'       - Maximal Mean Discrepancy
+%        'energy'    - Szekely & Rizzo energy test
+%        'ks'        - Two-dimensional Kolmorogov-Smirnov test
 %
 %     H0 : X and Y are mutually independent
 %
 %     using the following tests,
-%        'dcorr' - distance correlation (default)
-%        'rv' - RV coefficient
-%        'hsic' - Hilbert-Schmidt Independence Criterion
+%        'dcorr'     - distance correlation (default)
+%        'rv'        - RV coefficient
+%        'hsic'      - Hilbert-Schmidt Independence Criterion
 %
 %     H0 : X and Y have the same mean
 %     
 %     using the following tests,
 %        'hotelling' - Hotelling T^2 test
-%        'randsub' - random subspace
+%        'randsub'   - random subspace
 %
 %     H0 : cov(X) = cov(Y)
 %     
 %     using the following tests,
-%        'covdiff' - Cai et al. test for difference in covariance matrices
+%        'covdiff'   - Cai et al. test for difference in covariance matrices
 %
 %     PROPERTIES
 %     x       - [m x p] matrix, m samples with dimensionality p
-%     x       - [n x q] matrix, n samples with dimensionality q
+%     y       - [n x q] matrix, n samples with dimensionality q
 %     m       - # of x samples
 %     p       - # of x dimensions
 %     n       - # of y samples
@@ -75,7 +75,7 @@
 %     SEE ALSO
 %     DepTest1, UniSphereTest
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found
 %     https://github.com/brian-lau/highdim
 %
@@ -89,7 +89,7 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-classdef DepTest2 < hgsetget
+classdef DepTest2 < handle
    properties
       x
       y

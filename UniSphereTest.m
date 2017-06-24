@@ -1,4 +1,4 @@
-% UNISPHERETEST               Test if data is uniformly distributed on unit hypersphere 
+% UNISPHERETEST               Test uniform distribution on unit hypersphere 
 % 
 %     Given a sample X1,...,Xn from a p-dimensional multivariate distribution,
 %     test the hypothesis:
@@ -6,19 +6,19 @@
 %     H0 : Sample is uniformly distributed on the unit hypersphere (S_{p-1})
 %     
 %     using the following tests,
-%        'rayleigh' - Rayleigh test, parametric (default)
-%        'gine' - Gine test
-%        'gine3' - Gine test with fast approximation for p = 3
-%        'bingham' - Bingham test
-%        'ajne' - Ajne test, non-parametric
+%        'rayleigh'  - Rayleigh test, parametric (default)
+%        'gine'      - Gine test
+%        'gine3'     - Gine test with fast approximation for p = 3
+%        'bingham'   - Bingham test
+%        'ajne'      - Ajne test, non-parametric
 %        'gine-ajne' - Weighted Gine/Ajne test, non-parametric
-%        'randproj' - Random projection test, non-parametric
+%        'randproj'  - Random projection test, non-parametric
 %
 %     PROPERTIES
-%     x     - [n x p] matrix, n samples with dimensionality p
-%     n     - # of samples
-%     p     - # of dimensions
-%     test  - string (see above, default = 'rayleigh')
+%     x       - [n x p] matrix, n samples with dimensionality p
+%     n       - # of samples
+%     p       - # of dimensions
+%     test    - string (see above, default = 'rayleigh')
 %     params  - parameters passed through for specific tests
 %     alpha   - alpha level (default = 0.05)
 %     stat    - corresponding statistic
@@ -47,7 +47,7 @@
 %     SEE ALSO
 %     DepTest1, DepTest2
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr$
 %     The full license and most recent version of the code can be found at:
 %     https://github.com/brian-lau/highdim
 %
@@ -61,7 +61,7 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-classdef UniSphereTest < hgsetget
+classdef UniSphereTest < handle
    properties
       x
    end

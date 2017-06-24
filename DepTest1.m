@@ -14,16 +14,15 @@
 %
 %     H0 : X1,...,Xp are mutually independent
 %
-%     using the following tests rank-based tests suitable for high-dimensional
-%     data
+%     using the following rank-based tests suitable for high-dimensional data
 %        'spearman' - R1 from Han & Liu (default)
 %        'kendall'  - R2 from Han & Liu 
 %
 %     PROPERTIES
-%     x     - [n x p] matrix, n samples with dimensionality p
-%     n     - # of samples
-%     p     - # of dimensions
-%     test  - string (see above, default = 'bcs')
+%     x       - [n x p] matrix, n samples with dimensionality p
+%     n       - # of samples
+%     p       - # of dimensions
+%     test    - string (see above, default = 'bcs')
 %     params  - parameters passed through for specific tests
 %     alpha   - alpha level (default = 0.05)
 %     stat    - corresponding statistic
@@ -58,7 +57,7 @@
 %     SEE ALSO
 %     DepTest2, UniSphereTest
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found
 %     https://github.com/brian-lau/highdim
 %
@@ -72,7 +71,7 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-classdef DepTest1 < hgsetget
+classdef DepTest1 < handle
    properties
       x
    end
@@ -122,6 +121,8 @@ classdef DepTest1 < hgsetget
       
       function set.x(self,x)
          [n,p] = size(x);
+         % Clear cache of monte-carlo samples if dimensions change
+         % Only applies for rank-based tests of independence
          if (self.n~=n) || (self.p~=p)
             self.mc = [];
          end
