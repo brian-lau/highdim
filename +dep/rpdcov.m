@@ -3,8 +3,9 @@
 %     d = rpdcov(x,y,k)
 %
 %     Estimate (unbiased) distance covariance using Huang & Huo algorithm,
-%     which has O(nk (log n + p + q)) complexity and O(n) storage compared
-%     to O(n^2(p + q)) complexity and O(n^2) storage of the naive estimator.
+%     which has O(nk (log n + p + q)) complexity and O(max(n,k)) storage 
+%     compared to O(n^2(p + q)) complexity and O(n^2) storage of the naive 
+%     estimator.
 %
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p
@@ -17,10 +18,19 @@
 %     d - distance covariance between x,y
 %     omega_k - distance covariance of k univariate random projections
 %
+%     EXAMPLE
+%     n = 3000; p = 200; q = 200;
+%     x = rand(n,p);
+%     y = x.^2 + .2*randn(n,q);
+%     tic; dep.dcov(x,y,true)   % naive (unbiased) estimator
+%     toc
+%     tic; dep.rpdcov(x,y)
+%     toc
+%
 %     REFERENCE
 %     Huang & Huo (2017). A statistically and numerically efficient
-%        independence test based on random projections and distance
-%        covariance. arxiv.org/abs/1701.06054v1
+%       independence test based on random projections and distance
+%       covariance. arxiv.org/abs/1701.06054v1
 %
 %     SEE ALSO
 %     fdcov, dcov
@@ -41,6 +51,10 @@
 
 function [d,omega_k] = rpdcov(x,y,k)
 
+if nargin < 3
+   k = 50;
+end
+
 [nx,p] = size(x);
 [ny,q] = size(y);
 
@@ -48,8 +62,7 @@ if nx ~= ny
    error('RPDCOV requires x and y to have the same # of samples');
 end
 
-% Cp = sqrt(pi) * gamma((p+1)/2) / gamma(p/2);
-% Cq = sqrt(pi) * gamma((q+1)/2) / gamma(q/2);
+% Normalization constants, avoiding overflow
 Cp = sqrt(pi) * exp(gammaln((p+1)/2) - gammaln(p/2));
 Cq = sqrt(pi) * exp(gammaln((q+1)/2) - gammaln(q/2));
 
