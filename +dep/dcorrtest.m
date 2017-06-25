@@ -31,7 +31,7 @@
 %     SEE ALSO
 %     dcorr, DepTest2
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
 %     https://github.com/brian-lau/highdim
 %
@@ -52,7 +52,7 @@ par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addRequired(par,'y',@isnumeric);
 addParamValue(par,'test','t',@ischar);
-addParamValue(par,'nboot',1000,@(x) isnumeric(x) && isscalar(x));
+addParamValue(par,'nboot',999,@(x) isnumeric(x) && isscalar(x));
 parse(par,x,y,varargin{:});
 
 [n,~] = size(x);
@@ -66,7 +66,7 @@ switch lower(par.Results.test)
       v = n*(n-3)/2;
       T = sqrt(v-1) * r/sqrt(1-r^2);
       pval = 1 - tcdf(T,v-1);
-   otherwise % bootstrap unmodified 
+   otherwise % permutation
       r = dep.dcorr(x,y);
       nboot = par.Results.nboot;
       boot = zeros(nboot,1);
@@ -74,5 +74,5 @@ switch lower(par.Results.test)
          ind = randperm(n);
          boot(i) = dep.dcorr(x,y(ind,:));
       end
-      pval = sum(boot>=r)/nboot;
+      pval = (1 + sum(boot>r)) / (1 + nboot);
 end
