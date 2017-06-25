@@ -3,9 +3,10 @@
 %     Szekely & Rizzo (2013). The distance correlation t-test of independence 
 %       in high dimension. J Multiv Analysis 117: 193-213
 % Note that their table is a single sample
+clear;
 n = 30;
-p = [1 2 4 8 16 32 64];
-reps = 100;
+p = [1 2 4 8 16 32 64 128 256 512 1024 2048 4096];
+reps = 1;
 
 for i = 1:numel(p)
    for j = 1:reps
@@ -18,9 +19,8 @@ for i = 1:numel(p)
    end
 end
 
-mean(r)
-mean(rstar)
-mean(T)
+table(p',mean(r,1)',mean(rstar,1)',mean(T,1)',...
+   'VariableNames',{'pq','R','Rstar','T'})
 
 % [pval,r,T] =dep.dcorrtest([1 2 3 4 5]',[1.4 1.4 3.5 4.2 4.8]')
 % DepTest2([1 2 3 4 5]',[1.4 1.4 3.5 4.2 4.8]','test','dcorr')
@@ -35,3 +35,27 @@ mean(T)
 % Bias corrected dcor 
 %            0.942809 
 
+% Section 3, example 1, page 200
+clear;
+n = 30;
+p = 30;
+q = 30;
+reps = 1000;
+
+for i = 1:reps
+   x = rand(n,p);
+   y = rand(n,q);
+   [pval(i),~,T(i)] = dep.dcorrtest(x,y);
+end
+
+clear;
+n = 30;
+p = 30;
+q = 30;
+reps = 1000;
+
+for i = 1:reps
+   x = rand(n,p);
+   y = x + sqrt(.2)*randn(n,q); % I think there is a typo in the paper
+   [pval(i),~,T(i)] = dep.dcorrtest(x,y);
+end

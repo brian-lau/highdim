@@ -1,6 +1,6 @@
 % DCORR                       Distance correlation
 % 
-%     d = dcorr(x,y,correct)
+%     r = dcorr(x,y,correct)
 %
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p
@@ -10,7 +10,7 @@
 %     correct - boolean indicating bias-correction (default=false)
 %
 %     OUTPUTS
-%     d - distance correlation between x,y
+%     r - distance correlation between x,y
 %
 %     REFERENCE
 %     Szekely et al (2007). Measuring and testing independence by correlation 
@@ -35,7 +35,7 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-function d = dcorr(x,y,correct)
+function r = dcorr(x,y,correct)
 
 if nargin < 3
    correct = false;
@@ -44,4 +44,4 @@ else
 end
 
 [d,dvx,dvy] = dep.dcov(x,y,correct);
-d = d/sqrt(dvx*dvy);
+r = d/sqrt(dvx*dvy);

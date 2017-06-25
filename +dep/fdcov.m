@@ -16,7 +16,7 @@
 %
 %     REFERENCE
 %     Huo & Szekely (2016). Fast Computing for Distance Covariance,
-%        Technometrics, 58, 435?447. DOI:10.1080/00401706.2015.1054435
+%       Technometrics, 58, 435?447. DOI:10.1080/00401706.2015.1054435
 %
 %     SEE ALSO
 %     fdcorr, rpdcov
