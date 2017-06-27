@@ -3,7 +3,7 @@
 %     F = gineajne(U)
 %
 %     A weighted sum of Gine's and Anje's statistics is consistent against
-%     all alternative to uniformity on S^(p-1), the unit sphere in R^p.
+%     all alternatives to uniformity on S^(p-1), the unit sphere in R^p.
 %
 %     INPUTS
 %     U - [n x p] matrix, n samples with dimensionality p
@@ -17,9 +17,9 @@
 %       and orientations. Annals of Statistics 6: 169-176.
 %
 %     SEE ALSO
-%     UniSphereTest, spatialSign
+%     UniSphereTest, gine, ajne, spatialSign
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
 %     https://github.com/brian-lau/highdim
 %

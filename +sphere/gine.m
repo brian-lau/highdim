@@ -15,7 +15,7 @@
 %     SEE ALSO
 %     UniSphereTest, spatialSign
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
 %     https://github.com/brian-lau/highdim
 %
