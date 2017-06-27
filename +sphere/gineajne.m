@@ -38,6 +38,6 @@ function F = gineajne(U)
 [n,p] = size(U);
 
 psi = sphere.psivec(U,n);
-G = n/2 - (p-1)/(2*n) * (gamma((p-1)/2)/gamma(p/2))^2 * sum(sin(psi));
+G = n/2 - (p-1)/(2*n) * ( exp(gammaln((p-1)/2) - gammaln(p/2)) )^2 * sum(sin(psi));
 A = (n/4) - (1/(n*pi))*sum(psi);
 F = G + A;

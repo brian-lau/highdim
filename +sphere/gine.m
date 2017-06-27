@@ -34,5 +34,5 @@ function G = gine(U)
 [n,p] = size(U);
 
 psi = sphere.psivec(U,n);
-% eq. 10.7.5
-G = n/2 - (p-1)/(2*n) * (gamma((p-1)/2)/gamma(p/2))^2 * sum(sin(psi));
+% eq. 10.7.5, avoiding overflow
+G = n/2 - (p-1)/(2*n) * ( exp(gammaln((p-1)/2) - gammaln(p/2)) )^2 * sum(sin(psi));
