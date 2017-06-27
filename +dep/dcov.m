@@ -23,7 +23,7 @@
 %     SEE ALSO
 %     dcorr, dcorrtest
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
 %     https://github.com/brian-lau/highdim
 %
@@ -36,6 +36,9 @@
 %     but WITHOUT ANY WARRANTY; without even the implied warranty of
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
+
+% TODO
+% x,y can be distance matrices, to simplify permutations
 
 function [d,dvx,dvy] = dcov(x,y,correct)
 
@@ -56,6 +59,9 @@ A = bsxfun(@plus,A,mean(mean(a)));
 B = bsxfun(@minus,b,mean(b));
 B = bsxfun(@minus,B,mean(b,2));
 B = bsxfun(@plus,B,mean(mean(b)));
+
+% A = a - bsxfun(@plus,mean(a),mean(a,2)) + mean(a(:));
+% B = b - bsxfun(@plus,mean(b),mean(b,2)) + mean(b(:));
 
 if correct
    Astar = (n/(n-1)) * (A - a/n);
