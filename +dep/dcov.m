@@ -1,13 +1,16 @@
 % DCOV                        Distance covariance
 % 
-%     [d,dvx,dvy] = dcov(x,y,correct)
+%     [d,dvx,dvy] = dcov(x,y,varargin)
 %
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p
 %     y - [n x q] n samples of dimensionality q
 %
-%     OPTIONAL
-%     correct - boolean indicating bias-correction (default=false)
+%     OPTIONAL (as name/value pairs, order irrelevant)
+%     unbiased - boolean indicating bias-correction (default=false)
+%     dist - boolean indicating x & y are distance matrices (default=false)
+%     doublecenter - boolean indicating x & y are double-centered 
+%       distance matrices (default=false)
 %
 %     OUTPUTS
 %     d - distance covariance between x,y
@@ -40,32 +43,45 @@
 % TODO
 % x,y can be distance matrices, to simplify permutations
 
-function [d,dvx,dvy,A,B] = dcov(x,y,correct)
+function [d,dvx,dvy,A,B] = dcov(x,y,varargin)
 
-if nargin < 3
-   correct = false;
-end
+par = inputParser;
+par.KeepUnmatched = true;
+addRequired(par,'x',@isnumeric);
+addRequired(par,'y',@isnumeric);
+addParamValue(par,'unbiased',false,@isscalar);
+addParamValue(par,'dist',false,@isscalar);
+addParamValue(par,'doublecenter',false,@isscalar);
+parse(par,x,y,varargin{:});
 
 [n,~] = size(x);
-if n ~= size(y,1)
-   error('DCOV requires x and y to have the same # of samples');
+assert(n == size(y,1),'DCOV requires x and y to have the same # of samples');
+
+if par.Results.doublecenter
+   % Inputs are already double-centered distance matrices
+   A = x;
+   B = y;
+else
+   if par.Results.dist
+      a = x;
+      b = y;
+   else
+      % Distance matrices, equivalent to pdist2(x,x) and squareform(pdist(x))
+      a = sqrt(utils.sqdist(x,x));
+      b = sqrt(utils.sqdist(y,y));
+   end
+   
+   % Double-centering
+   a_j = mean(a);    ai_ = mean(a,2);
+   b_j = mean(b);    bi_ = mean(b,2);
+   a__ = (sum(ai_) + sum(a_j)) / (2*n); % mean(a(:))
+   b__ = (sum(bi_) + sum(b_j)) / (2*n);
+   
+   A = a - bsxfun(@plus,a_j,ai_) + a__;
+   B = b - bsxfun(@plus,b_j,bi_) + b__;
 end
 
-a = sqrt(utils.sqdist(x,x)); % = pdist2(x,x) and squareform(pdist(x))
-b = sqrt(utils.sqdist(y,y));
-
-a_j = mean(a);    ai_ = mean(a,2);
-b_j = mean(b);    bi_ = mean(b,2);
-a__ = (sum(ai_) + sum(a_j)) / (2*n); % mean(a(:))
-b__ = (sum(bi_) + sum(b_j)) / (2*n);
-
-A = a - bsxfun(@plus,a_j,ai_) + a__;
-B = b - bsxfun(@plus,b_j,bi_) + b__;
-
-% A = a - bsxfun(@plus,mean(a),mean(a,2)) + mean(a(:));
-% B = b - bsxfun(@plus,mean(b),mean(b,2)) + mean(b(:));
-
-if correct
+if par.Results.unbiased
    % Astar & Bstar, section 2.4 Szekely & Rizzo
    A = (n/(n-1)) * (A - a/n);
    A(1:(n+1):n*n) = (n/(n-1)) * (a_j - a__);
