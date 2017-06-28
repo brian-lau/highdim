@@ -13,21 +13,16 @@
 %     y - [n x q] n samples of dimensionality q
 %
 %     OPTIONAL
-%     test - 't' indicates t-test from Szekely & Rizzo (2013), 
-%              otherwise bootstrap (default = 't')
+%     test - 'pearson'
+%            'perm'
 %     nboot - # bootstrap samples if not t-test
 %
 %     OUTPUTS
 %     pval - p-value
-%     r    - distance correlation, corrected if method = 't' (default)
-%     T    - t-statistic
+%     d    - distance covariance
+%     stat - test statistic
 %
 %     REFERENCE
-%     Szekely et al (2007). Measuring and testing independence by correlation 
-%       of distances. Ann Statist 35: 2769-2794
-%     Huang & Huo (2017). A statistically and numerically efficient
-%       independence test based on random projections and distance
-%       covariance. arxiv.org/abs/1701.06054v1
 %
 %     SEE ALSO
 %     dcorr, DepTest2
@@ -46,13 +41,13 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-function [pval,d] = dcovtest(x,y,varargin)
+function [pval,d,stat] = dcovtest(x,y,varargin)
 
 par = inputParser;
 par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addRequired(par,'y',@isnumeric);
-addParamValue(par,'estimator','direct',@ischar);
+%addParamValue(par,'estimator','direct',@ischar);
 addParamValue(par,'test','perm',@ischar);
 addParamValue(par,'nboot',999,@(x) isnumeric(x) && isscalar(x));
 parse(par,x,y,varargin{:});
@@ -63,8 +58,17 @@ if n ~= size(y,1)
 end
 
 switch lower(par.Results.test)
-   case {'gamma'}
-      % TODO
+   case {'pearson'}
+      [d,~,~,A,B] = dep.dcov(x,y);
+      [mu,sigma2,skew] = utils.permMoments(A,B);
+      
+      stat = sum(sum(A.*B));
+      stat = (stat - mu)/sqrt(sigma2);
+      if skew >= 0
+         pval = gamcdf(stat - (-2/skew),4/skew^2,skew/2,'upper');
+      else
+         pval = gamcdf(skew/abs(skew)*stat + 2/abs(skew),4/skew^2,abs(skew)/2,'upper');         
+      end
    otherwise % permutation
       d = dep.dcov(x,y);
       nboot = par.Results.nboot;
