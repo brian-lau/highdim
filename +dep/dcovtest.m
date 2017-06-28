@@ -15,10 +15,11 @@
 %     moment-matched Pearson Type III distribution (Bilodeau & Guetsop Nangue
 %     2017; Josse et al 2008; Minas & Montana 2014). The first three moments 
 %     of the permutation distribution can be calculated exactly for distance 
-%     covariance and related statistics (Kazi-Aoual et al 1995), and are 
-%     accurate (Josse et al 2008). Since this method does not actually permute 
-%     the data, it is very fast, and acheives the same statistical power that 
-%     would otherwise require millions of permutations (Minas & Montana, 2014).
+%     covariance and related statistics (Kazi-Aoual et al 1995), and are robust
+%     and accurate (Josse et al 2008). Since this method does not actually 
+%     permute the data, it is very fast, and acheives the same statistical 
+%     power that would otherwise require millions of permutations (Minas & 
+%     Montana, 2014).
 %
 %     Testing using actual permutations of the data are also implemented.
 %     Naive permutation of the rows of X or Y is expensive due to O(n^2) 
@@ -39,7 +40,7 @@
 %              'perm-brute' - brute force randomization, directly permuting
 %                             one of the inputs, which requires recalculating 
 %                             and centering distance matrices
-%     nboot - # bootstrap samples if not t-test
+%     nboot - # permutations if method != 'pearson'
 %
 %     OUTPUTS
 %     pval - p-value
@@ -49,8 +50,8 @@
 %     EXAMPLE
 %     rng(1234);
 %     p = 100;
-%     n = 1000;
-%     X = rand(n,p);  Y = X.^2 + 5.5*randn(n,p);
+%     n = 2000;
+%     X = rand(n,p);  Y = X.^2 + 15*randn(n,p);
 %
 %     tic;[pval,d] = dep.dcovtest(X,Y,'method','pearson'); toc
 %     pval
@@ -116,16 +117,17 @@ switch lower(par.Results.method)
          as = abs(skew);
          pval = gamcdf(skew/as*stat + 2/as,4/skew^2,as/2,'upper');         
       end
-   case {'perm'}
+      
+      return;
+   case {'perm'} % FIXME, this only works for BIASED, since distance matrices are necessary for UNBIASED
       [d,~,~,A,B] = dep.dcov(x,y);
 
       boot = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);
-         B = B(:,ind); B = B(ind,:);
-         boot(i) = dep.dcov(A,B,'doublecenter',true);
+         %B = B(:,ind); B = B(ind,:);
+         boot(i) = dep.dcov(A,B(ind,ind),'doublecenter',true);
       end
-      pval = (1 + sum(boot>d)) / (1 + nboot);
    case {'perm-dist'}
       a = sqrt(utils.sqdist(x,x));
       b = sqrt(utils.sqdist(y,y));
@@ -134,10 +136,9 @@ switch lower(par.Results.method)
       boot = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);
-         b = b(:,ind); b = b(ind,:);
-         boot(i) = dep.dcov(a,bstar,'dist',true);
+         %b = b(:,ind); b = b(ind,:);
+         boot(i) = dep.dcov(a,b(ind,ind),'dist',true);
       end
-      pval = (1 + sum(boot>d)) / (1 + nboot);
    case {'perm-brute'}
       d = dep.dcov(x,y);
 
@@ -146,7 +147,8 @@ switch lower(par.Results.method)
          ind = randperm(n);
          boot(i) = dep.dcov(x,y(ind,:));
       end
-      pval = (1 + sum(boot>d)) / (1 + nboot);
    otherwise
       error('Unrecognized test method');
 end
+
+pval = (1 + sum(boot>d)) / (1 + nboot);

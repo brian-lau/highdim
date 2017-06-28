@@ -7,6 +7,14 @@
 %     compared to O(n^2(p + q)) complexity and O(n^2) storage of the naive 
 %     estimator.
 %
+%     The random projection estimator is an unbiased estimator of distance
+%     covariance (bias-corrected variant). The difference converges to zero
+%     at a rate no worse than O(1/sqrt(k)), where k is the number of random 
+%     projections.
+%
+%     The direct estimator will perform better when high-dimensional data
+%     have low-dimensional dependency structure.
+%
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p
 %     y - [n x q] n samples of dimensionality q
@@ -19,12 +27,14 @@
 %     omega_k - distance covariance of k univariate random projections
 %
 %     EXAMPLE
-%     n = 3000; p = 200; q = 200;
+%     n = 10000; p = 500; q = p;
 %     x = rand(n,p);
-%     y = x.^2 + .2*randn(n,q);
-%     tic; dep.dcov(x,y,true)   % naive (unbiased) estimator
+%     y = x.^2 ;
+%     tic; dep.dcov(x,y,'unbiased',true)   % naive (unbiased) estimator
 %     toc
 %     tic; dep.rpdcov(x,y)
+%     toc
+%     tic; dep.rpdcov(x,y,100)
 %     toc
 %
 %     REFERENCE
@@ -49,6 +59,9 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
+% o parfor
+% o data too large to fit in memory
+
 function [d,omega_k] = rpdcov(x,y,k)
 
 if nargin < 3
@@ -57,10 +70,7 @@ end
 
 [nx,p] = size(x);
 [ny,q] = size(y);
-
-if nx ~= ny
-   error('RPDCOV requires x and y to have the same # of samples');
-end
+assert(nx == ny,'RPDCOV requires x and y to have the same # of samples');
 
 % Normalization constants, avoiding overflow
 Cp = sqrt(pi) * exp(gammaln((p+1)/2) - gammaln(p/2));

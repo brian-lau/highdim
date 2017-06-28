@@ -1,13 +1,16 @@
 % DCORR                       Distance correlation
 % 
-%     r = dcorr(x,y,correct)
+%     r = dcorr(x,y,varargin)
 %
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p
 %     y - [n x q] n samples of dimensionality q
 %
-%     OPTIONAL
-%     correct - boolean indicating bias-correction (default=false)
+%     OPTIONAL (as name/value pairs, order irrelevant)
+%     unbiased - true indicates bias-corrected estimate (default=false)
+%     dist     - true indicates x & y are distance matrices (default=false)
+%     doublecenter - true indicates x & y are double-centered distance 
+%                matrices (default=false)
 %
 %     OUTPUTS
 %     r - distance correlation between x,y
@@ -19,9 +22,9 @@
 %       in high dimension. J Multiv Analysis 117: 193-213
 %
 %     SEE ALSO
-%     dcorr, dcorrtest
+%     dcorrtest, dcov
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
 %     https://github.com/brian-lau/highdim
 %
@@ -35,13 +38,13 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-function r = dcorr(x,y,correct)
+function r = dcorr(x,y,varargin)
 
-if nargin < 3
-   correct = false;
-else
-   assert(isscalar(correct),'Third input must be a scalar or boolean');
-end
+par = inputParser;
+par.KeepUnmatched = true;
+addRequired(par,'x',@isnumeric);
+addRequired(par,'y',@isnumeric);
+parse(par,x,y,varargin{:});
 
-[d,dvx,dvy] = dep.dcov(x,y,correct);
+[d,dvx,dvy] = dep.dcov(x,y,par.Unmatched);
 r = d/sqrt(dvx*dvy);

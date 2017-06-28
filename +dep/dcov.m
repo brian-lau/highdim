@@ -7,13 +7,13 @@
 %     y - [n x q] n samples of dimensionality q
 %
 %     OPTIONAL (as name/value pairs, order irrelevant)
-%     unbiased - boolean indicating bias-correction (default=false)
-%     dist - boolean indicating x & y are distance matrices (default=false)
-%     doublecenter - boolean indicating x & y are double-centered 
-%       distance matrices (default=false)
+%     unbiased - true indicates bias-corrected estimate (default=false)
+%     dist     - true indicates x & y are distance matrices (default=false)
+%     doublecenter - true indicates x & y are double-centered distance 
+%                matrices (default=false)
 %
 %     OUTPUTS
-%     d - distance covariance between x,y
+%     d - distance covariance between x & y
 %     dvx - x sample distance variance
 %     dvy - y sample distance variance
 %
@@ -40,9 +40,6 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-% TODO
-% x,y can be distance matrices, to simplify permutations
-
 function [d,dvx,dvy,A,B] = dcov(x,y,varargin)
 
 par = inputParser;
@@ -63,6 +60,7 @@ if par.Results.doublecenter
    B = y;
 else
    if par.Results.dist
+      % Inputs are euclidean distance matrices
       a = x;
       b = y;
    else
@@ -103,7 +101,7 @@ end
 
 % Sample distance variances
 function z = dv(x,n)
-z = sqrt(sum(sum(x))/n^2);
+z = sqrt(sum(x(:))/n^2);
 
 function z = dvmod(x,y,n)
 U = x.*y;

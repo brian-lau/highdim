@@ -13,14 +13,31 @@
 %     y - [n x q] n samples of dimensionality q
 %
 %     OPTIONAL
-%     test - 't' indicates t-test from Szekely & Rizzo (2013), 
-%              otherwise bootstrap (default = 't')
-%     nboot - # bootstrap samples if not t-test
+%     method - 't'          - t-test from Szekely & Rizzo (2013), DEFAULT 
+%              'perm'       - randomization using permutation of the rows &
+%                             columns of distance matrices
+%              'perm-brute' - brute force randomization, directly permuting
+%                             one of the inputs, which requires recalculating 
+%                             and centering distance matrices
+%     nboot - # permutations if not t-test
 %
 %     OUTPUTS
 %     pval - p-value
-%     r    - distance correlation, corrected if method = 't' (default)
+%     r    - distance correlation, bias-corrected if method = 't' (default)
 %     T    - t-statistic
+%
+%     EXAMPLE
+%     rng(1234);
+%     p = 2000;
+%     n = 500;
+%     X = rand(n,p);  Y = X.^2 + 1*randn(n,p);
+%
+%     tic;[pval,r] = dep.dcorrtest(X,Y,'method','t'); toc
+%     [pval , r]
+%     tic;[pval,r] = dep.dcorrtest(X,Y,'method','perm','nboot',200);toc
+%     [pval , r]
+%     tic;[pval,r] = dep.dcorrtest(X,Y,'method','perm-brute','nboot',200);toc
+%     [pval , r]
 %
 %     REFERENCE
 %     Szekely et al (2007). Measuring and testing independence by correlation 
@@ -51,28 +68,48 @@ par = inputParser;
 par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addRequired(par,'y',@isnumeric);
-addParamValue(par,'test','t',@ischar);
+addParamValue(par,'method','t',@ischar);
 addParamValue(par,'nboot',999,@(x) isnumeric(x) && isscalar(x));
 parse(par,x,y,varargin{:});
 
 [n,~] = size(x);
-if n ~= size(y,1)
-   error('DCORRTEST requires x and y to have the same # of samples');
-end
+assert(n == size(y,1),'DCORRTEST requires x and y to have the same # of samples');
 
-switch lower(par.Results.test)
+nboot = par.Results.nboot;
+
+switch lower(par.Results.method)
    case {'t','ttest','t-test'}
-      r = dep.dcorr(x,y,true);
+      r = dep.dcorr(x,y,'unbiased',true);
       v = n*(n-3)/2;
       T = sqrt(v-1) * r/sqrt(1-r^2);
       pval = 1 - tcdf(T,v-1);
-   otherwise % permutation
-      r = dep.dcorr(x,y);
-      nboot = par.Results.nboot;
+      %tcdf(T,v-1,'upper')
+      
+      return;
+   case {'perm'}      
+      a = sqrt(utils.sqdist(x,x));
+      b = sqrt(utils.sqdist(y,y));
+      [d,dvx,dvy] = dep.dcov(a,b,'dist',true,'unbiased',true);
+      r = d/sqrt(dvx*dvy);
+
       boot = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);
-         boot(i) = dep.dcorr(x,y(ind,:));
+         [d2,dvx2,dvy2] = dep.dcov(a,b(ind,ind),'dist',true,'unbiased',true);
+         boot(i) = d2/sqrt(dvx2*dvy2);
       end
-      pval = (1 + sum(boot>r)) / (1 + nboot);
+   case {'perm-brute'}
+      [d,dvx,dvy] = dep.dcov(x,y,'unbiased',true);
+      r = d/sqrt(dvx*dvy);
+
+      boot = zeros(nboot,1);
+      for i = 1:nboot
+         ind = randperm(n);
+         [d2,dvx2,dvy2] = dep.dcov(x,y(ind,:),'unbiased',true);
+         boot(i) = d2/sqrt(dvx2*dvy2);
+      end
+   otherwise
+      error('Unrecognized test method');
 end
+
+pval = (1 + sum(boot>r)) / (1 + nboot);
