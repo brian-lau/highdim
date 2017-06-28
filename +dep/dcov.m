@@ -21,7 +21,7 @@
 %       in high dimension. J Multiv Analysis 117: 193-213
 %
 %     SEE ALSO
-%     dcorr, dcorrtest
+%     dcovtest, dcorr, dcorrtest, rpdcov, fdcov
 
 %     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
@@ -40,7 +40,7 @@
 % TODO
 % x,y can be distance matrices, to simplify permutations
 
-function [d,dvx,dvy] = dcov(x,y,correct)
+function [d,dvx,dvy,A,B] = dcov(x,y,correct)
 
 if nargin < 3
    correct = false;
@@ -51,28 +51,31 @@ if n ~= size(y,1)
    error('DCOV requires x and y to have the same # of samples');
 end
 
-a = pdist2(x,x);
-b = pdist2(y,y);
-A = bsxfun(@minus,a,mean(a));
-A = bsxfun(@minus,A,mean(a,2));
-A = bsxfun(@plus,A,mean(mean(a)));
-B = bsxfun(@minus,b,mean(b));
-B = bsxfun(@minus,B,mean(b,2));
-B = bsxfun(@plus,B,mean(mean(b)));
+a = sqrt(utils.sqdist(x,x)); % = pdist2(x,x) and squareform(pdist(x))
+b = sqrt(utils.sqdist(y,y));
+
+a_j = mean(a);    ai_ = mean(a,2);
+b_j = mean(b);    bi_ = mean(b,2);
+a__ = (sum(ai_) + sum(a_j)) / (2*n); % mean(a(:))
+b__ = (sum(bi_) + sum(b_j)) / (2*n);
+
+A = a - bsxfun(@plus,a_j,ai_) + a__;
+B = b - bsxfun(@plus,b_j,bi_) + b__;
 
 % A = a - bsxfun(@plus,mean(a),mean(a,2)) + mean(a(:));
 % B = b - bsxfun(@plus,mean(b),mean(b,2)) + mean(b(:));
 
 if correct
-   Astar = (n/(n-1)) * (A - a/n);
-   Astar(1:(n+1):n*n) = (n/(n-1)) * (mean(a) - mean(mean(a)));
-   Bstar = (n/(n-1)) * (B - b/n);
-   Bstar(1:(n+1):n*n) = (n/(n-1)) * (mean(b) - mean(mean(b)));
+   % Astar & Bstar, section 2.4 Szekely & Rizzo
+   A = (n/(n-1)) * (A - a/n);
+   A(1:(n+1):n*n) = (n/(n-1)) * (a_j - a__);
+   B = (n/(n-1)) * (B - b/n);
+   B(1:(n+1):n*n) = (n/(n-1)) * (b_j - b__);
    
-   d = dvmod(Astar,Bstar,n);
+   d = dvmod(A,B,n);
    if nargout > 1
-      dvx = dvmod(Astar,Astar,n);
-      dvy = dvmod(Bstar,Bstar,n);
+      dvx = dvmod(A,A,n);
+      dvy = dvmod(B,B,n);
    end
 else
    d = dv(A.*B,n);
