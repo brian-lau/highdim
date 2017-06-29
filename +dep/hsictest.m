@@ -42,6 +42,7 @@
 %     method - 'pearson'    - Pearson type III approx by moment matching,
 %                             first 3 moments (DEFAULT)
 %              'gamma'      - Gamma approximation, first 2 moments
+%              'spectral'   - Spectral approximation
 %              'perm'       - randomization using permutation of the rows &
 %                             columns of the double-centered distance matrices
 %              'perm-dist'  - randomization using permutation of the rows &
@@ -74,7 +75,7 @@
 %     SEE ALSO
 %     hsic, DepTest2
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
 %     https://github.com/brian-lau/highdim
 %
@@ -122,6 +123,20 @@ switch lower(par.Results.method)
       end
       
       return;
+   case {'spectral'}
+      [h,K,L] = dep.hsic(x,y,par.Unmatched);
+      H = eye(m) - ones(m)/m;
+      lambda = eig(H*K*H);
+      eta = eig(H*L*H);
+      lambdaeta = lambda*eta';
+
+      stat = m*h;
+      null = zeros(nboot,1);
+      for i = 1:nboot
+         N = randn(m).^2; % chi2rnd(1,m,m);
+         null(i) = sum(sum(lambdaeta.*N));
+      end
+      null = null/m^2;
    case {'gamma'}
       [h,K,L] = dep.hsic(x,y,par.Unmatched);
       H = eye(m) - ones(m)/m;
@@ -155,29 +170,32 @@ switch lower(par.Results.method)
       H = eye(m) - ones(m)/m;
       Kc = H*K*H;
       
-      stat = zeros(nboot,1);
+      null = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(m);
-         stat(i) = sum(sum(Kc'.*L(ind,ind)))/m^2;
+         null(i) = sum(sum(Kc'.*L(ind,ind)))/m^2;
       end
    case {'perm-gram'}
       [h,K,L] = dep.hsic(x,y,par.Unmatched);
       
-      stat = zeros(nboot,1);
+      null = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(m);
-         stat(i) = dep.hsic(K,L(ind,ind),'gram',true,par.Unmatched);
+         null(i) = dep.hsic(K,L(ind,ind),'gram',true,par.Unmatched);
       end
    case {'perm-brute'}
       h = dep.hsic(x,y,par.Unmatched);
 
-      stat = zeros(nboot,1);
+      null = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);
-         stat(i) = dep.hsic(x,y(ind,:),par.Unmatched);
+         null(i) = dep.hsic(x,y(ind,:),par.Unmatched);
       end
    otherwise
       error('Unrecognized test method');
 end
 
-pval = (1 + sum(stat>h)) / (1 + nboot);
+if ~exist('stat','var')
+   stat = h;
+end
+pval = (1 + sum(null>stat)) / (1 + nboot);
