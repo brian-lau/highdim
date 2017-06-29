@@ -1,6 +1,6 @@
 % DCOV                        Distance covariance
 % 
-%     [d,dvx,dvy] = dcov(x,y,varargin)
+%     [d,dvx,dvy,A,B] = dcov(x,y,varargin)
 %
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p
@@ -8,14 +8,17 @@
 %
 %     OPTIONAL (as name/value pairs, order irrelevant)
 %     unbiased - true indicates bias-corrected estimate (default=false)
+%     index    - scalar in (0,2], exponent on Euclidean distance, default = 1
 %     dist     - true indicates x & y are distance matrices (default=false)
 %     doublecenter - true indicates x & y are double-centered distance 
 %                matrices (default=false)
 %
 %     OUTPUTS
-%     d - distance covariance between x & y
+%     d   - distance covariance between x & y
 %     dvx - x sample distance variance
 %     dvy - y sample distance variance
+%     A   - double-centered or U-centered distance matrix for x
+%     B   - double-centered or U-centered distance matrix for y
 %
 %     REFERENCE
 %     Szekely et al (2007). Measuring and testing independence by correlation 
@@ -47,6 +50,7 @@ par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addRequired(par,'y',@isnumeric);
 addParamValue(par,'unbiased',false,@isscalar);
+addParamValue(par,'index',1,@(x) isscalar(x) && (x>0) && (x<=2));
 addParamValue(par,'dist',false,@isscalar);
 addParamValue(par,'doublecenter',false,@isscalar);
 parse(par,x,y,varargin{:});
@@ -67,6 +71,11 @@ else
       % Distance matrices, equivalent to pdist2(x,x) and squareform(pdist(x))
       a = sqrt(utils.sqdist(x,x));
       b = sqrt(utils.sqdist(y,y));
+   end
+   
+   if par.Results.index ~= 1
+      a = a.^par.Results.index;
+      b = b.^par.Results.index;
    end
    
    % Double-centering
