@@ -1,6 +1,6 @@
 % HSIC                        Hilbert-Schmidt Independence Criterion
 % 
-%     [stat,K,L,sigmax,sigmay,biased] = hsic(x,y,varargin)
+%     [stat,K,L,sigmax,sigmay] = hsic(x,y,varargin)
 %
 %     INPUTS
 %     x - [m x p] m samples of dimensionality p
@@ -12,7 +12,7 @@
 %     biased - boolean indicated biased estimator (default=false)
 %
 %     OUTPUTS
-%     stat - Hilbert-Schmidt Independence Criterion
+%     h - Hilbert-Schmidt Independence Criterion
 %
 %     REFERENCE
 %     Gretton et al (2008). A kernel statistical test of independence. NIPS
@@ -36,7 +36,7 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-function [stat,K,L,sigmax,sigmay,biased] = hsic(x,y,varargin)
+function [h,K,L,sigmax,sigmay] = hsic(x,y,varargin)
 
 par = inputParser;
 par.KeepUnmatched = true;
@@ -44,30 +44,57 @@ addRequired(par,'x',@isnumeric);
 addRequired(par,'y',@isnumeric);
 addParamValue(par,'sigmax',[],@isnumeric);
 addParamValue(par,'sigmay',[],@isnumeric);
-addParamValue(par,'biased',false,@(x) isnumeric(x) || islogical(x));
+addParamValue(par,'unbiased',false,@(x) isnumeric(x) || islogical(x));
+addParamValue(par,'gram',false,@isscalar);
+addParamValue(par,'doublecenter',false,@isscalar);
 parse(par,x,y,varargin{:});
 
 [m,p] = size(x);
 [n,q] = size(y);
-if m ~= n
-   error('x and y must have same # of rows');
-end
+assert(m == n,'HSIC requires x and y to have the same # of samples');
 
-if isempty(par.Results.sigmax)
-   % Median heuristic, Gretton et al. 2012
-   sigmax = sqrt(0.5*median(pdist(x).^2));
+% error on doublecenter = true && unbiased
+
+if par.Results.doublecenter
+   Kc = x;
+   Lc = y;
+elseif par.Results.gram
+   K = x;
+   L = y;
 else
-   sigmax = par.Results.sigmax;
+   if isempty(par.Results.sigmax)
+      % Median heuristic, Gretton et al. 2012
+      sigmax = sqrt(0.5*median(pdist(x).^2));
+   else
+      sigmax = par.Results.sigmax;
+   end
+   
+   if isempty(par.Results.sigmay)
+      sigmay = sqrt(0.5*median(pdist(y).^2));
+   else
+      sigmay = par.Results.sigmay;
+   end
+   
+   K = utils.rbf(sigmax,x);
+   L = utils.rbf(sigmay,y);
 end
 
-if isempty(par.Results.sigmay)
-   sigmay = sqrt(0.5*median(pdist(y).^2));
+% Song et al. eq 4, 5
+if par.Results.unbiased
+   K = utils.zerodiag(K);
+   L = utils.zerodiag(L);
+   l = ones(m,1);
+   h = trace(K*L) + (l'*K*l*l'*L*l)/(m-1)/(m-2) - 2*(l'*K*L*l)/(m-2);
+   h = h/m/(m-3);
 else
-   sigmay = par.Results.sigmay;
+   if ~exist('Kc','var')
+      H = eye(m) - ones(m)/m;
+      Kc = K*H;
+      Lc = L*H;
+   end
+   h = sum(sum(Kc.*Lc))/m^2;
+   %h = sum(sum((H*K*H)'.*L))/m^2;
+   %h = trace(Kc*Lc)/m^2;
+   %h = trace(H*K*H*H*L*H)/m^2
+   %h = sum(sum((H*K*H).*(H*L*H)))/m^2;
 end
-
-K = utils.rbf(sigmax,x);
-L = utils.rbf(sigmay,y);
-
-biased = par.Results.biased;
-stat = dep.hsic_(K,L,m,biased);

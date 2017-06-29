@@ -1,6 +1,6 @@
 % DCOVTEST                    Distance covariance test of independence
 % 
-%     [pval,r,T] = dcovtest(x,y,varargin)
+%     [pval,r,stat] = dcovtest(x,y,varargin)
 %
 %     Given a sample X1,...,Xn from a p-dimensional multivariate distribution,
 %     and a sample Y1,...,Xn from a q-dimensional multivariate distribution,
@@ -10,21 +10,21 @@
 %
 %     This hypothesis is tested using several different permutation methods. 
 %
-%     The default permutation method actually avoids permuting the data
-%     altogether by approximating the permutation distribution using a 
-%     moment-matched Pearson Type III distribution (Bilodeau & Guetsop Nangue
-%     2017; Josse et al 2008; Minas & Montana 2014). The first three moments 
-%     of the permutation distribution can be calculated exactly for distance 
-%     covariance and related statistics (Kazi-Aoual et al 1995), and are robust
-%     and accurate (Josse et al 2008). Since this method does not actually 
-%     permute the data, it is very fast, and acheives the same statistical 
-%     power that would otherwise require millions of permutations (Minas & 
-%     Montana, 2014).
+%     The default permutation method avoids permuting the data altogether 
+%     by approximating the permutation distribution using a moment-matched 
+%     Pearson Type III distribution (Bilodeau & Guetsop Nangue 2017; Josse 
+%     et al 2008; Minas & Montana 2014). The first three moments of the 
+%     permutation distribution can be calculated exactly for distance 
+%     covariance and related statistics (Kazi-Aoual et al 1995), and are 
+%     robust and accurate (Josse et al 2008). Since this method does not 
+%     actually permute the data, it is very fast, achieving the same 
+%     statistical power that would otherwise require millions of permutations 
+%     (Minas & Montana, 2014).
 %
 %     Testing using actual permutations of the data are also implemented.
 %     Naive permutation of the rows of X or Y is expensive due to O(n^2) 
 %     distance calculations. This can be avoided since it is equivalent to 
-%     permuting the rows and columns of the distance matrix simultaneously, 
+%     simultaneously permuting the rows and columns of the distance matrix, 
 %     and recomputing the statistic with the permuted distance matrix.
 %
 %     INPUTS
@@ -54,20 +54,22 @@
 %     X = rand(n,p);  Y = X.^2 + 15*randn(n,p);
 %
 %     tic;[pval,d] = dep.dcovtest(X,Y,'method','pearson'); toc
-%     pval
+%     [pval, d]
+%     tic;[pval,d] = dep.dcovtest(X,Y,'method','pearson','unbiased',true); toc
+%     [pval, d]
 %     tic;[pval,d] = dep.dcovtest(X,Y,'method','perm','nboot',200);toc
-%     pval
+%     [pval, d]
 %     tic;[pval,d] = dep.dcovtest(X,Y,'method','perm-brute','nboot',200);toc
-%     pval
+%     [pval, d]
 %
 %     REFERENCE
 %     Bilodeau & Guetsop Nangue (2017). Approximations to permutation tests 
 %       of independence between two random vectors. 
-%       Computational Statistics and Data Analysis, submitted.
+%       Computational Statistics & Data Analysis, submitted.
 %     Josse, Pages & Husson (2008). Testing the significance of the RV 
 %       coefficient. Computational Statistics and Data Analysis. 53: 82-91
 %     Kazi-Aoual et al (1995). Refined approximations to permutation tests 
-%       for multivariate inference. Computational Statistics and Data Analysis.
+%       for multivariate inference. Computational Statistics & Data Analysis.
 %       20: 643-656
 %     Minas & Montana (2014). Distance-based analysis of variance: 
 %       Approximate inference. Statistical Analysis & Data Mining. 7: 450-470
@@ -106,49 +108,56 @@ nboot = par.Results.nboot;
 
 switch lower(par.Results.method)
    case {'pearson'}
-      [d,~,~,A,B] = dep.dcov(x,y);
+      [d,~,~,A,B] = dep.dcov(x,y,par.Unmatched);
       [mu,sigma2,skew] = utils.permMoments(A,B); % Exact moments
       
-      stat = (n^2)*d^2; %  = sum(sum(A.*B)) for biased estimator
+      if isfield(par.Unmatched,'unbiased') && par.Unmatched.unbiased
+         stat = (n*(n-3))*d; %  = sum(sum(A.*B)) for unbiased estimator
+      else
+         stat = (n^2)*d^2; %  = sum(sum(A.*B)) for biased estimator
+      end
       stat = (stat - mu)/sqrt(sigma2);
       if skew >= 0
          pval = gamcdf(stat - (-2/skew),4/skew^2,skew/2,'upper');
       else
          as = abs(skew);
-         pval = gamcdf(skew/as*stat + 2/as,4/skew^2,as/2,'upper');         
+         pval = gamcdf(skew/as*stat + 2/as,4/skew^2,as/2);         
       end
       
       return;
-   case {'perm'} % FIXME, this only works for BIASED, since distance matrices are necessary for UNBIASED
+   case {'perm'}
+      if isfield(par.Unmatched,'unbiased') && par.Unmatched.unbiased
+         % This only works for BIASED estimator, since distance matrices are
+         % necessary for calculating the UNBIASED estimator
+         error('Cannot use unbiased estimator for method = ''perm''');
+      end
       [d,~,~,A,B] = dep.dcov(x,y);
 
-      boot = zeros(nboot,1);
+      stat = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);
-         %B = B(:,ind); B = B(ind,:);
-         boot(i) = dep.dcov(A,B(ind,ind),'doublecenter',true);
+         stat(i) = dep.dcov(A,B(ind,ind),'doublecenter',true);
       end
    case {'perm-dist'}
       a = sqrt(utils.sqdist(x,x));
       b = sqrt(utils.sqdist(y,y));
       d = dep.dcov(a,b,'dist',true);
       
-      boot = zeros(nboot,1);
+      stat = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);
-         %b = b(:,ind); b = b(ind,:);
-         boot(i) = dep.dcov(a,b(ind,ind),'dist',true);
+         stat(i) = dep.dcov(a,b(ind,ind),'dist',true);
       end
    case {'perm-brute'}
-      d = dep.dcov(x,y);
+      d = dep.dcov(x,y,par.Unmatched);
 
-      boot = zeros(nboot,1);
+      stat = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);
-         boot(i) = dep.dcov(x,y(ind,:));
+         stat(i) = dep.dcov(x,y(ind,:),par.Unmatched);
       end
    otherwise
       error('Unrecognized test method');
 end
 
-pval = (1 + sum(boot>d)) / (1 + nboot);
+pval = (1 + sum(stat>d)) / (1 + nboot);
