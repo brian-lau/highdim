@@ -1,7 +1,43 @@
+% PERMMOMENTS                 Exact moments of permutation distribution
+% 
+%     [mu,sigma2,skew] = permMoments(A1,A2)
+%
+%     Returns the first three moments of the permutation distribution of 
+%     T = trace(A1*A2). Exact expressions have been obtained by Kazi-Aoual
+%     et al (1995). The specific formulation used here comes from Bilodeau
+%     and Guetsop Nangue (2017).
+%     
+%     INPUTS
+%     A1 - [n x n] matrix
+%     A2 - [n x n] matrix
+%
+%     REFERENCE
+%     Bilodeau & Guetsop Nangue (2017). Approximations to permutation tests 
+%       of independence between two random vectors. 
+%       Computational Statistics & Data Analysis, submitted.
+%     Kazi-Aoual et al (1995). Refined approximations to permutation tests 
+%       for multivariate inference. Computational Statistics & Data Analysis.
+%       20: 643-656
+
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
+%     The full license and most recent version of the code can be found at:
+%     https://github.com/brian-lau/highdim
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+% 
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+
 function [mu,sigma2,skew] = permMoments(A1,A2)
 
-% Check square, equal size
-n = size(A1,1);
+assert(all(size(A1)==size(A2)),'A1 and A2 must have the same size.');
+[m,n] = size(A1);
+assert(m==n,'A1 and A2 must be square.');
 
 [T(1),T2(1),S2(1),T3(1),S3(1),U(1),R(1),B(1)] = useful(A1);
 [T(2),T2(2),S2(2),T3(2),S3(2),U(2),R(2),B(2)] = useful(A2);
