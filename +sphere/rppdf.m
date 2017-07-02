@@ -33,7 +33,7 @@
 %     SEE ALSO
 %     rp, rpcdf
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
 %     https://github.com/brian-lau/highdim
 %
@@ -52,5 +52,5 @@ function h = rppdf(theta,p)
 assert(all(theta>=0)&&all(theta<=pi),'theta must be 0<=theta<=pi.');
 assert((mod(p,1)==0)&&(p>1),'p must be integer > 0.');
 
-h = (1/sqrt(pi)) * (gamma(p/2)/(gamma((p-1)/2)))*...
+h = (1/sqrt(pi)) * exp( gammaln(p/2) - gammaln((p-1)/2) )*...
     (sin(theta).^(p-2));
