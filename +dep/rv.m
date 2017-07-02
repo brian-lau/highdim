@@ -22,7 +22,7 @@
 %     SEE ALSO
 %     rvtest, dcorr, dcorrtest, DepTest2
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
 %     https://github.com/brian-lau/highdim
 %
@@ -47,9 +47,7 @@ addParamValue(par,'demean',true,@islogical);
 parse(par,x,y,varargin{:});
 
 [n,~] = size(x);
-if n ~= size(y,1)
-   error('RV requires x and y to have the same # of samples');
-end
+assert(n == size(y,1),'RV requires x and y to have the same # of samples');
 
 if par.Results.demean
    x = bsxfun(@minus,x,mean(x));

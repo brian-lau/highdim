@@ -1,6 +1,6 @@
 % RPDCOV                      Randomly projected distance covariance
 % 
-%     d = rpdcov(x,y,k)
+%     [d,omega_k] = rpdcov(x,y,k)
 %
 %     Estimate (unbiased) distance covariance using Huang & Huo algorithm,
 %     which has O(nk (log n + p + q)) complexity and O(max(n,k)) storage 
@@ -27,9 +27,10 @@
 %     omega_k - distance covariance of k univariate random projections
 %
 %     EXAMPLE
+%     rng(1234)
 %     n = 10000; p = 500; q = p;
 %     x = rand(n,p);
-%     y = x.^2 ;
+%     y = x.^2;
 %     tic; dep.dcov(x,y,'unbiased',true)   % naive (unbiased) estimator
 %     toc
 %     tic; dep.rpdcov(x,y)

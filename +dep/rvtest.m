@@ -1,6 +1,6 @@
 % RVTEST                      Test RV coefficient of dependence
 % 
-%     [pval,rv,nrv] = rvtest(x,y)
+%     [pval,rv,stat] = rvtest(x,y)
 %
 %     INPUTS
 %     x - [n x p] n samples of dimensionality p
@@ -9,14 +9,14 @@
 %     OUTPUTS
 %     pval - p-value from Pearson type III approximation
 %     rv   - RV coefficient
-%     nrv  - normalized RV coefficient
+%     stat - test statistic, normalized RV coefficient
 %
 %     REFERENCE
 %     Josse et al (2008). Testing the significance of the RV coefficient.
 %       Computational Statistics and Data Analysis 53: 82-91
 %
 %     SEE ALSO
-%     rv, dcorr, dcorrtest
+%     rv, dcorr, dcorrtest, DepTest2
 
 %     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
@@ -32,15 +32,13 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-function [pval,rv,nrv] = rvtest(x,y)
+function [pval,rv,stat] = rvtest(x,y)
 
 [n,~] = size(x);
-if n ~= size(y,1)
-   error('RVTEST requires x and y to have the same # of samples');
-end
+assert(n == size(y,1),'RVTEST requires x and y to have the same # of samples');
 
 [rv,xx,yy] = dep.rv(x,y);
-
+      
 % mean
 bx = trace(xx)^2/trace(xx^2);
 by = trace(yy)^2/trace(yy^2);
@@ -55,15 +53,16 @@ var_rv = (2*(n-1-bx)*(n-1-by))/((n+1)*(n-1)^2*(n-2)) *...
      (1 + ((n-3)/(2*n*(n-1)))*tx*ty);
 
 % Standardized RV coefficient
-nrv = (rv - mu_rv)/sqrt(var_rv);
+stat = (rv - mu_rv)/sqrt(var_rv);
 
 % Skewness estimate for Pearson III approximation
-[~,~,sk] = utils.permMoments(xx,yy,n);
+[~,~,skew] = utils.permMoments(xx,yy);
 
-if sk >= 0
-   pval = 1 - gamcdf(nrv-(-2/sk),4/sk^2,sk/2);
+if skew >= 0
+   pval = gamcdf(stat - (-2/skew),4/skew^2,skew/2,'upper');
 else
-   pval = gamcdf(sk/abs(sk)*nrv+2/abs(sk),4/sk^2,abs(sk)/2);
+   as = abs(skew);
+   pval = gamcdf(skew/as*stat + 2/as,4/skew^2,as/2);
 end
 
 end

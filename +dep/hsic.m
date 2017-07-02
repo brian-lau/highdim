@@ -2,14 +2,17 @@
 % 
 %     [stat,K,L,sigmax,sigmay] = hsic(x,y,varargin)
 %
+%     Estimate the Hilbert-Schmidt Independence Criterion (HSIC) using
+%     gaussian kernels.
+%
 %     INPUTS
 %     x - [m x p] m samples of dimensionality p
 %     y - [m x q] m samples of dimensionality q
 %
 %     OPTIONAL (name/value pairs)
-%     sigmax - gaussian bandwidth, default = median heuristic
-%     sigmay - gaussian bandwidth, default = median heuristic
-%     biased - boolean indicated biased estimator (default=false)
+%     sigmax   - gaussian bandwidth, default = median heuristic
+%     sigmay   - gaussian bandwidth, default = median heuristic
+%     unbiased - boolean indicated biased estimator (default=false)
 %
 %     OUTPUTS
 %     h - Hilbert-Schmidt Independence Criterion
@@ -22,7 +25,7 @@
 %     SEE ALSO
 %     hsictest
 
-%     $ Copyright (C) 2014 Brian Lau http://www.subcortex.net/ $
+%     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
 %     https://github.com/brian-lau/highdim
 %
@@ -75,24 +78,29 @@ else
       sigmay = par.Results.sigmay;
    end
    
-   K = utils.rbf(sigmax,x);
-   L = utils.rbf(sigmay,y);
+   K = utils.rbf(sigmax,x,[],par.Unmatched);
+   L = utils.rbf(sigmay,y,[],par.Unmatched);
 end
 
 % Song et al. eq 4, 5
-if par.Results.unbiased
+if par.Results.unbiased % U-statistic
    K = utils.zerodiag(K);
    L = utils.zerodiag(L);
    l = ones(m,1);
    h = trace(K*L) + (l'*K*l*l'*L*l)/(m-1)/(m-2) - 2*(l'*K*L*l)/(m-2);
    h = h/m/(m-3);
-else
+else                    % V-statistic
    if ~exist('Kc','var')
       H = eye(m) - ones(m)/m;
       Kc = K*H;
       Lc = L*H;
    end
    h = sum(sum(Kc.*Lc))/m^2;
+   
+   %tic;Zx = utils.rff(sigmax,x,'sampling','qmc','D',500);toc
+   %tic;Zy = utils.rff(sigmay,y,'sampling','qmc','D',500);toc
+   %m = size(Zx,1);
+   %H = eye(m) - ones(m)/m;
    %h = sum(sum((H*K*H)'.*L))/m^2;
    %h = trace(Kc*Lc)/m^2;
    %h = trace(H*K*H*H*L*H)/m^2
