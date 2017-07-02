@@ -1,6 +1,6 @@
 % HSICTEST                    HSIC test of independence
 % 
-%     [pval,h,stat] = hsictest(x,y,varargin)
+%     [pval,h,stat,null] = hsictest(x,y,varargin)
 %
 %     Given a sample X1,...,Xm from a p-dimensional multivariate distribution,
 %     and a sample Y1,...,Xm from a q-dimensional multivariate distribution,
@@ -21,8 +21,8 @@
 %     require millions of permutations (Minas & Montana, 2014).
 %
 %     The Gamma approximation proposed by Gretton et al (2008) is also
-%     implemented for completeness, although this is inferior to the Pearson 
-%     Type III approximation and should not be used (Bilodeau & Guetsop 
+%     implemented for completeness, although it is strictly inferior to the 
+%     Pearson Type III approximation and should not be used (Bilodeau & Guetsop 
 %     Nangue 2017).
 %
 %     Testing using actual permutations of the data are also implemented.
@@ -45,8 +45,8 @@
 %              'spectral'   - Spectral approximation
 %              'perm'       - randomization using permutation of the rows &
 %                             columns of the double-centered distance matrices
-%              'perm-dist'  - randomization using permutation of the rows &
-%                             columns of distance matrices
+%              'perm-gram'  - randomization using permutation of the rows &
+%                             columns of gram matrices
 %              'perm-brute' - brute force randomization, directly permuting
 %                             one of the inputs, which requires recalculating 
 %                             and centering distance matrices
@@ -54,8 +54,9 @@
 %
 %     OUTPUTS
 %     pval - p-value
-%     stat - HSIC
-%     boot - bootstrap samples 
+%     h    - HSIC
+%     stat - test statistic
+%     null - permutation statistics
 %
 %     REFERENCE
 %     Bilodeau & Guetsop Nangue (2017). Approximations to permutation tests 
@@ -71,6 +72,9 @@
 %       Approximate inference. Statistical Analysis & Data Mining. 7: 450-470
 %     Song et al (2012). Feature Selection via Dependence Maximization.
 %       Journal of Machine Learning Research 13: 1393-1434
+%     Zhang et al (2011). Kernel-based conditional independence test and 
+%       application in Causal Discovery. In: The Conference on Uncertainty 
+%       in Artificial Intelligence, 804?813
 %
 %     SEE ALSO
 %     hsic, DepTest2
@@ -89,7 +93,7 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-function [pval,h,stat] = hsictest(x,y,varargin)
+function [pval,h,stat,varargout] = hsictest(x,y,varargin)
 
 par = inputParser;
 par.KeepUnmatched = true;
@@ -103,26 +107,17 @@ m = size(x,1);
 n = size(y,1);
 assert(m == n,'HSIC requires x and y to have the same # of samples');
 
+permMethods = {'spectral' 'perm' 'perm-gram' 'perm-brute'};
 nboot = par.Results.nboot;
+method = lower(par.Results.method);
 
-switch lower(par.Results.method)
+switch method
    case {'pearson'}
       [h,K,L] = dep.hsic(x,y,par.Unmatched);
       A = K - bsxfun(@plus,mean(K),mean(K,2)) + mean(K(:));
       B = L - bsxfun(@plus,mean(L),mean(L,2)) + mean(L(:));
 
-      [mu,sigma2,skew] = utils.permMoments(A,B); % Exact moments
-      
-      stat = sum(sum(A.*B));
-      stat = (stat - mu)/sqrt(sigma2);
-      if skew >= 0
-         pval = gamcdf(stat - (-2/skew),4/skew^2,skew/2,'upper');
-      else
-         as = abs(skew);
-         pval = gamcdf(skew/as*stat + 2/as,4/skew^2,as/2);         
-      end
-      
-      return;
+      [pval,stat] = utils.pearsonIIIpval(A,B);
    case {'spectral'}
       [h,K,L] = dep.hsic(x,y,par.Unmatched);
       H = eye(m) - ones(m)/m;
@@ -131,9 +126,10 @@ switch lower(par.Results.method)
       lambdaeta = lambda*eta';
 
       stat = m*h;
+
       null = zeros(nboot,1);
       for i = 1:nboot
-         N = randn(m).^2; % chi2rnd(1,m,m);
+         N = randn(m).^2; % = chi2rnd(1,m,m);
          null(i) = sum(sum(lambdaeta.*N));
       end
       null = null/m^2;
@@ -143,6 +139,8 @@ switch lower(par.Results.method)
       Kc = H*K*H;
       Lc = H*L*H;
       
+      stat = m*h;
+
       % Variance under H0
       sigma2 = (1/6 * Kc.*Lc).^2;
       sigma2 = 1/m/(m-1)* ( sum(sum(sigma2)) - sum(diag(sigma2)) );
@@ -154,12 +152,9 @@ switch lower(par.Results.method)
       l = ones(m,1);
       muX = 1/m/(m-1)*l'*(K*l);
       muY = 1/m/(m-1)*l'*(L*l);
-      mu  = 1/m * ( 1 + muX*muY  - muX - muY );  %mean under H0
+      mu  = 1/m * ( 1 + muX*muY  - muX - muY );
 
-      stat = m*h;
       pval = gamcdf(stat,mu^2/sigma2,sigma2*m/mu,'upper');
-      
-      return;
    case {'perm'}
       if isfield(par.Unmatched,'unbiased') && par.Unmatched.unbiased
          % This only works for BIASED estimator, since gram matrices are
@@ -167,9 +162,9 @@ switch lower(par.Results.method)
          error('Cannot use unbiased estimator for method = ''perm''');
       end
       [h,K,L] = dep.hsic(x,y,par.Unmatched);
+      
       H = eye(m) - ones(m)/m;
       Kc = H*K*H;
-      
       null = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(m);
@@ -195,7 +190,18 @@ switch lower(par.Results.method)
       error('Unrecognized test method');
 end
 
-if ~exist('stat','var')
-   stat = h;
+% One of the permutation methods
+if any(strcmp(method,permMethods))
+   if ~exist('stat','var')
+      stat = h;
+   end
+   pval = (1 + sum(null>stat)) / (1 + nboot);
 end
-pval = (1 + sum(null>stat)) / (1 + nboot);
+
+if nargout == 4
+   if exist('null','var')
+      varargout{1} = null;
+   else
+      varargout{1} = [];
+   end
+end

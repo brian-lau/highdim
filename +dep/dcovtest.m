@@ -1,6 +1,6 @@
 % DCOVTEST                    Distance covariance test of independence
 % 
-%     [pval,r,stat] = dcovtest(x,y,varargin)
+%     [pval,r,stat,null] = dcovtest(x,y,varargin)
 %
 %     Given a sample X1,...,Xn from a p-dimensional multivariate distribution,
 %     and a sample Y1,...,Xn from a q-dimensional multivariate distribution,
@@ -46,6 +46,7 @@
 %     pval - p-value
 %     d    - distance covariance
 %     stat - test statistic
+%     null - permutation statistics
 %
 %     EXAMPLE
 %     rng(1234);
@@ -91,7 +92,7 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-function [pval,d,stat] = dcovtest(x,y,varargin)
+function [pval,d,stat,varargout] = dcovtest(x,y,varargin)
 
 par = inputParser;
 par.KeepUnmatched = true;
@@ -104,27 +105,21 @@ parse(par,x,y,varargin{:});
 [n,~] = size(x);
 assert(n == size(y,1),'DCOVTEST requires x and y to have the same # of samples');
 
+permMethods = {'perm' 'perm-dist' 'perm-brute'};
 nboot = par.Results.nboot;
+method = lower(par.Results.method);
 
-switch lower(par.Results.method)
+switch method
    case {'pearson'}
       [d,~,~,A,B] = dep.dcov(x,y,par.Unmatched);
-      [mu,sigma2,skew] = utils.permMoments(A,B); % Exact moments
       
       if isfield(par.Unmatched,'unbiased') && par.Unmatched.unbiased
          stat = (n*(n-3))*d; %  = sum(sum(A.*B)) for unbiased estimator
       else
          stat = (n^2)*d^2; %  = sum(sum(A.*B)) for biased estimator
       end
-      stat = (stat - mu)/sqrt(sigma2);
-      if skew >= 0
-         pval = gamcdf(stat - (-2/skew),4/skew^2,skew/2,'upper');
-      else
-         as = abs(skew);
-         pval = gamcdf(skew/as*stat + 2/as,4/skew^2,as/2);         
-      end
       
-      return;
+      [pval,stat] = utils.pearsonIIIpval(A,B,stat);      
    case {'perm'}
       if isfield(par.Unmatched,'unbiased') && par.Unmatched.unbiased
          % This only works for BIASED estimator, since distance matrices are
@@ -133,31 +128,45 @@ switch lower(par.Results.method)
       end
       [d,~,~,A,B] = dep.dcov(x,y);
 
-      stat = zeros(nboot,1);
+      null = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);
-         stat(i) = dep.dcov(A,B(ind,ind),'doublecenter',true);
+         null(i) = dep.dcov(A,B(ind,ind),'doublecenter',true);
       end
    case {'perm-dist'}
       a = sqrt(utils.sqdist(x,x));
       b = sqrt(utils.sqdist(y,y));
       d = dep.dcov(a,b,'dist',true);
       
-      stat = zeros(nboot,1);
+      null = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);
-         stat(i) = dep.dcov(a,b(ind,ind),'dist',true);
+         null(i) = dep.dcov(a,b(ind,ind),'dist',true);
       end
    case {'perm-brute'}
       d = dep.dcov(x,y,par.Unmatched);
 
-      stat = zeros(nboot,1);
+      null = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);
-         stat(i) = dep.dcov(x,y(ind,:),par.Unmatched);
+         null(i) = dep.dcov(x,y(ind,:),par.Unmatched);
       end
    otherwise
       error('Unrecognized test method');
 end
 
-pval = (1 + sum(stat>d)) / (1 + nboot);
+% One of the permutation methods
+if any(strcmp(method,permMethods))
+   if ~exist('stat','var')
+      stat = d;
+   end
+   pval = (1 + sum(null>stat)) / (1 + nboot);
+end
+
+if nargout == 4
+   if exist('null','var')
+      varargout{1} = null;
+   else
+      varargout{1} = [];
+   end
+end

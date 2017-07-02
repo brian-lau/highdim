@@ -1,6 +1,6 @@
 % DCORRTEST                   Distance correlation test of independence
 % 
-%     [pval,r,stat] = dcorrtest(x,y,varargin)
+%     [pval,r,stat,null] = dcorrtest(x,y,varargin)
 %
 %     Given a sample X1,...,Xn from a p-dimensional multivariate distribution,
 %     and a sample Y1,...,Xn from a q-dimensional multivariate distribution,
@@ -34,8 +34,9 @@
 %
 %     OUTPUTS
 %     pval - p-value
-%     r    - distance correlation, bias-corrected
+%     r    - distance correlation
 %     stat - test statistic
+%     null - permutation statistics
 %
 %     EXAMPLE
 %     rng(1234);
@@ -75,7 +76,7 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-function [pval,r,stat] = dcorrtest(x,y,varargin)
+function [pval,r,stat,varargout] = dcorrtest(x,y,varargin)
 
 par = inputParser;
 par.KeepUnmatched = true;
@@ -88,9 +89,11 @@ parse(par,x,y,varargin{:});
 [n,~] = size(x);
 assert(n == size(y,1),'DCORRTEST requires x and y to have the same # of samples');
 
+permMethods = {'perm-dist' 'perm-brute'};
 nboot = par.Results.nboot;
+method = lower(par.Results.method);
 
-switch lower(par.Results.method)
+switch method
    case {'pearson'}
       if ~isfield(par.Unmatched,'unbiased')
          % Override dcov default, we generally want unbiased dcorr
@@ -99,7 +102,7 @@ switch lower(par.Results.method)
          [d,dvx,dvy,A,B] = dep.dcov(x,y,par.Unmatched);
       end
       r = d/sqrt(dvx*dvy);
-      [mu,sigma2,skew] = utils.permMoments(A,B); % Exact moments
+      %[mu,sigma2,skew] = utils.permMoments(A,B); % Exact moments
       
       if isfield(par.Unmatched,'unbiased') && par.Unmatched.unbiased
          stat = (n*(n-3))*d; %  = sum(sum(A.*B)) for unbiased estimator
@@ -108,14 +111,8 @@ switch lower(par.Results.method)
       else
          stat = (n^2)*d^2; %  = sum(sum(A.*B)) for biased estimator
       end
-      stat = (stat - mu)/sqrt(sigma2);
-      if skew >= 0
-         pval = gamcdf(stat - (-2/skew),4/skew^2,skew/2,'upper');
-      else
-         as = abs(skew);
-         pval = gamcdf(skew/as*stat + 2/as,4/skew^2,as/2);         
-      end
       
+      [pval,stat] = utils.pearsonIIIpval(A,B,stat);
       return;
    case {'t','ttest','t-test'}
       if isfield(par.Unmatched,'unbiased') && ~par.Unmatched.unbiased
@@ -125,10 +122,10 @@ switch lower(par.Results.method)
       else
          r = dep.dcorr(x,y,par.Unmatched);
       end
+      
       v = n*(n-3)/2;
       stat = sqrt(v-1) * r/sqrt(1-r^2);
       pval = tcdf(stat,v-1,'upper');
-      
       return;
    case {'perm-dist'}      
       a = sqrt(utils.sqdist(x,x));
@@ -136,24 +133,38 @@ switch lower(par.Results.method)
       [d,dvx,dvy] = dep.dcov(a,b,'dist',true,'unbiased',true);
       r = d/sqrt(dvx*dvy);
 
-      stat = zeros(nboot,1);
+      null = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);
          [d2,dvx2,dvy2] = dep.dcov(a,b(ind,ind),'dist',true,'unbiased',true);
-         stat(i) = d2/sqrt(dvx2*dvy2);
+         null(i) = d2/sqrt(dvx2*dvy2);
       end
    case {'perm-brute'}
       [d,dvx,dvy] = dep.dcov(x,y,'unbiased',true);
       r = d/sqrt(dvx*dvy);
 
-      stat = zeros(nboot,1);
+      null = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(n);
          [d2,dvx2,dvy2] = dep.dcov(x,y(ind,:),'unbiased',true);
-         stat(i) = d2/sqrt(dvx2*dvy2);
+         null(i) = d2/sqrt(dvx2*dvy2);
       end
    otherwise
       error('Unrecognized test method');
 end
 
-pval = (1 + sum(stat>r)) / (1 + nboot);
+% One of the permutation methods
+if any(strcmp(method,permMethods))
+   if ~exist('stat','var')
+      stat = r;
+   end
+   pval = (1 + sum(null>stat)) / (1 + nboot);
+end
+
+if nargout == 4
+   if exist('null','var')
+      varargout{1} = null;
+   else
+      varargout{1} = [];
+   end
+end
