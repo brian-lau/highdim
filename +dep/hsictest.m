@@ -114,15 +114,14 @@ method = lower(par.Results.method);
 switch method
    case {'pearson'}
       [h,K,L] = dep.hsic(x,y,par.Unmatched);
-      A = K - bsxfun(@plus,mean(K),mean(K,2)) + mean(K(:));
-      B = L - bsxfun(@plus,mean(L),mean(L,2)) + mean(L(:));
+      Kc = utils.dcenter(K);
+      Lc = utils.dcenter(L);
 
-      [pval,stat] = utils.pearsonIIIpval(A,B);
+      [pval,stat] = utils.pearsonIIIpval(Kc,Lc);
    case {'spectral'}
       [h,K,L] = dep.hsic(x,y,par.Unmatched);
-      H = eye(m) - ones(m)/m;
-      lambda = eig(H*K*H);
-      eta = eig(H*L*H);
+      lambda = eig(utils.dcenter(K));
+      eta = eig(utils.dcenter(L));
       lambdaeta = lambda*eta';
 
       stat = m*h;
@@ -135,9 +134,8 @@ switch method
       null = null/m^2;
    case {'gamma'}
       [h,K,L] = dep.hsic(x,y,par.Unmatched);
-      H = eye(m) - ones(m)/m;
-      Kc = H*K*H;
-      Lc = H*L*H;
+      Kc = utils.dcenter(K);
+      Lc = utils.dcenter(L);
       
       stat = m*h;
 
@@ -163,8 +161,7 @@ switch method
       end
       [h,K,L] = dep.hsic(x,y,par.Unmatched);
       
-      H = eye(m) - ones(m)/m;
-      Kc = H*K*H;
+      Kc = utils.dcenter(K);
       null = zeros(nboot,1);
       for i = 1:nboot
          ind = randperm(m);

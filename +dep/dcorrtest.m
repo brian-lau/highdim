@@ -102,7 +102,6 @@ switch method
          [d,dvx,dvy,A,B] = dep.dcov(x,y,par.Unmatched);
       end
       r = d/sqrt(dvx*dvy);
-      %[mu,sigma2,skew] = utils.permMoments(A,B); % Exact moments
       
       if isfield(par.Unmatched,'unbiased') && par.Unmatched.unbiased
          stat = (n*(n-3))*d; %  = sum(sum(A.*B)) for unbiased estimator

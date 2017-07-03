@@ -47,4 +47,8 @@ addRequired(par,'y',@isnumeric);
 parse(par,x,y,varargin{:});
 
 [d,dvx,dvy] = dep.dcov(x,y,par.Unmatched);
-r = d/sqrt(dvx*dvy);
+if (dvx*dvy) > eps
+   r = d/sqrt(dvx*dvy);
+else
+   r = 0;
+end

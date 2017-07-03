@@ -77,43 +77,24 @@ else
       a = a.^par.Results.index;
       b = b.^par.Results.index;
    end
-   
-   % Double-centering
-   a_j = mean(a);    ai_ = mean(a,2);
-   b_j = mean(b);    bi_ = mean(b,2);
-   a__ = (sum(ai_) + sum(a_j)) / (2*n); % mean(a(:))
-   b__ = (sum(bi_) + sum(b_j)) / (2*n);
-   
-   A = a - bsxfun(@plus,a_j,ai_) + a__;
-   B = b - bsxfun(@plus,b_j,bi_) + b__;
 end
 
 if par.Results.unbiased
-   % Astar & Bstar, section 2.4 Szekely & Rizzo
-   A = (n/(n-1)) * (A - a/n);
-   A(1:(n+1):n*n) = (n/(n-1)) * (a_j - a__);
-   B = (n/(n-1)) * (B - b/n);
-   B(1:(n+1):n*n) = (n/(n-1)) * (b_j - b__);
+   A = utils.ucenter(a);
+   B = utils.ucenter(b);
    
-   d = dvmod(A,B,n);
+   d = sum(sum(A.*B))/(n*(n-3));
    if nargout > 1
-      dvx = dvmod(A,A,n);
-      dvy = dvmod(B,B,n);
+      dvx = sum(sum(A.*A))/(n*(n-3));
+      dvy = sum(sum(B.*B))/(n*(n-3));
    end
 else
-   d = dv(A.*B,n);
+   A = utils.dcenter(a);
+   B = utils.dcenter(b);
+   
+   d = sqrt(sum(sum(A.*B))/n^2);
    if nargout > 1
-      dvx = dv(A.*A,n);
-      dvy = dv(B.*B,n);
+      dvx = sqrt(sum(sum(A.*A))/n^2);
+      dvy = sqrt(sum(sum(B.*B))/n^2);
    end
 end
-
-% Sample distance variances
-function z = dv(x,n)
-z = sqrt(sum(x(:))/n^2);
-
-function z = dvmod(x,y,n)
-U = x.*y;
-U(1:(n+1):n*n) = 0;
-U = sum(U(:)) - (2/(n-2))*(diag(x)'*diag(y));
-z = U/(n*(n-3));

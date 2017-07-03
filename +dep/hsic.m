@@ -16,6 +16,8 @@
 %
 %     OUTPUTS
 %     h - Hilbert-Schmidt Independence Criterion
+%     K
+%     L
 %
 %     REFERENCE
 %     Gretton et al (2008). A kernel statistical test of independence. NIPS
@@ -82,27 +84,21 @@ else
    L = utils.rbf(sigmay,y,[],par.Unmatched);
 end
 
-% Song et al. eq 4, 5
 if par.Results.unbiased % U-statistic
    K = utils.zerodiag(K);
    L = utils.zerodiag(L);
-   l = ones(m,1);
-   h = trace(K*L) + (l'*K*l*l'*L*l)/(m-1)/(m-2) - 2*(l'*K*L*l)/(m-2);
-   h = h/m/(m-3);
+
+   Kc = utils.ucenter(K);
+   Lc = utils.ucenter(L);
+   h = sum(sum(Kc.*Lc))/(n*(n-3));
+   % l = ones(m,1);
+   % h = trace(K*L) + (l'*K*l*l'*L*l)/(n-1)/(n-2) - 2*(l'*K*L*l)/(n-2)   
 else                    % V-statistic
    if ~exist('Kc','var')
-      H = eye(m) - ones(m)/m;
-      Kc = K*H;
-      Lc = L*H;
+      Kc = utils.dcenter(K);
+      Lc = utils.dcenter(L);
    end
-   h = sum(sum(Kc.*Lc))/m^2;
-   
-   %tic;Zx = utils.rff(sigmax,x,'sampling','qmc','D',500);toc
-   %tic;Zy = utils.rff(sigmay,y,'sampling','qmc','D',500);toc
-   %m = size(Zx,1);
-   %H = eye(m) - ones(m)/m;
-   %h = sum(sum((H*K*H)'.*L))/m^2;
-   %h = trace(Kc*Lc)/m^2;
-   %h = trace(H*K*H*H*L*H)/m^2
-   %h = sum(sum((H*K*H).*(H*L*H)))/m^2;
+   h = sum(sum(Kc.*Lc))/n^2;
+   % h = trace(H*K*H*H*L*H)/n^2
+   % h = sum(sum((H*K*H).*(H*L*H)))/n^2;
 end
