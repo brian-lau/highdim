@@ -9,17 +9,19 @@
 %     OPTIONAL
 %     sampling - string indicating method for generating random features
 %                'uniform' - (DEFAULT)
-%                'qmc' - Quasi-Monte Carlo
+%                'qmc' - Quasi-Monte Carlo using Halton sequence
 %                'orf' - Orthogonal Random Features
+%                'sorf'- Structured Orthogonal Random Features
 %                'mm'  - Moment-Matched
 %     D        - scalar, dimensionality of feature map
 %     W        - [D x d] pre-computed feature map, convenience for a
 %                applying feature map to new data
 %     complex  - boolean, true returns map as complex
-%     skip     - scalar, # initial points to omit (for sampling = 'qmc') 
-%     leap     - scalar, # points in between sets (for sampling = 'qmc') 
-%     scramble - boolean, scramble sequence (for sampling = 'qmc')
-%     state    - scalar, state of qmc generator (for sampling = 'qmc') 
+%     The following parameters are specific for sampling = 'qmc'
+%     skip     - scalar, # initial points to omit
+%     leap     - scalar, # points in between sets
+%     scramble - boolean, scramble sequence
+%     state    - scalar, state of qmc generator
 %
 %     OUTPUTS
 %     phi - feature map
@@ -101,7 +103,7 @@ else
             if par.Results.scramble
                pset = scramble(pset,'RR2');
             end
-            % Persistent stream for properly increment draws on subsequent calls
+            % Persistent stream to properly increment draws on subsequent calls
             pstream = qrandstream(pset);
             %fprintf('Halton random stream opened\n')
          end
@@ -116,7 +118,7 @@ else
          G = randn(max(d,D),max(d,D));
          [Q,~] = qr(G);
          
-         % Chi-distributed with max(d,D) dof
+         % Chi-distributed with max(d,D) degrees of freedom
          % X = randn(max(d,D),max(d,D));
          % s = sqrt(sum(X.^2,2));
          s = sqrt(chi2rnd(max(d,D),max(d,D),1));
@@ -125,6 +127,23 @@ else
          
          W = (S*Q)/sigma;
          W = W(1:D,1:d);
+      case {'sorf'}
+         n2 = nextpow2(max(D,d));
+%          H = (1/sqrt(2^n2))*hadamard(2^n2);
+%          D1 = diag(2*(rand(2^n2,1)<0.5) - 1);
+%          D2 = diag(2*(rand(2^n2,1)<0.5) - 1);
+%          D3 = diag(2*(rand(2^n2,1)<0.5) - 1);
+%          W = sqrt(2^n2)*H*D1*H*D2*H*D3;
+
+         D1 = diag(2*(rand(2^n2,1)<0.5) - 1);
+         D2 = diag(2*(rand(2^n2,1)<0.5) - 1);
+         D3 = diag(2*(rand(2^n2,1)<0.5) - 1);
+         HD1 = fwht(D1,2^n2,'hadamard')*sqrt(2^n2);
+         HD2 = fwht(D2,2^n2,'hadamard')*sqrt(2^n2);
+         HD3 = fwht(D3,2^n2,'hadamard')*sqrt(2^n2);
+         W = sqrt(2^n2)*HD1*HD2*HD3;
+         
+         W = W(1:D,1:d)/sigma;
       otherwise
          error('Unrecognized sampling method');
    end
