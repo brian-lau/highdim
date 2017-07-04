@@ -1,3 +1,25 @@
+% RDC                         Randomized dependence coefficient
+%
+%     r = rdc(x,y,varargin)
+%
+%     RDC is the largest canonical correlation as computed by RCCA on random 
+%     features of the copula transformations of two random samples
+%
+%     INPUTS
+%     x     - [n x p] n samples of dimensionality p
+%     y     - [n x q] n samples of dimensionality q
+%
+%     OPTIONAL
+%     k
+%     s
+%     f
+%     demean
+%
+%     OUTPUTS
+%
+%     REFERENCE
+%
+
 % Based on R code:
 % https://github.com/lopezpaz/randomized_dependence_coefficient/blob/master/code/algorithms.r
 % rdc <- function(x,y,k=20,s=1/6,f=sin) {

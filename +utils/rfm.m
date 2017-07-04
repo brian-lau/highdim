@@ -9,20 +9,23 @@
 %     OPTIONAL
 %     sampling - string indicating method for generating random features
 %                'uniform' - (DEFAULT)
-%                'qmc' - quasi Monte Carlo
+%                'qmc' - Quasi-Monte Carlo
 %                'orf' - Orthogonal Random Features
-%                'mm'  - Moment-matched
-%     D        - 
-%     W        - 
+%                'mm'  - Moment-Matched
+%     D        - scalar, dimensionality of feature map
+%     W        - [D x d] pre-computed feature map, convenience for a
+%                applying feature map to new data
 %     complex  - boolean, true returns map as complex
 %     skip     - scalar, # initial points to omit (for sampling = 'qmc') 
 %     leap     - scalar, # points in between sets (for sampling = 'qmc') 
 %     scramble - boolean, scramble sequence (for sampling = 'qmc')
+%     state    - scalar, state of qmc generator (for sampling = 'qmc') 
 %
 %     OUTPUTS
 %     phi - feature map
-%           [D x n] 
-%           [2D x n]
+%           [D x n] when 'complex' = true
+%           [2D x n] when 'complex' = false, cos and sin components stacked
+%     W   - [D x d] feature map
 %
 %     REFERENCES
 %     Felix et al (2016). Orthogonal random features. Advances in Neural 
@@ -50,6 +53,10 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
+% TODO
+% o ORF should probably be run in blocks
+% o SORF
+
 function [phi,W] = rfm(sigma,x,varargin)
 persistent pstream; % for qmc
 
@@ -64,12 +71,14 @@ addParamValue(par,'D',2^4,@(x) isnumeric(x) && isscalar(x));
 addParamValue(par,'skip',1000,@(x) isnumeric(x) && isscalar(x));
 addParamValue(par,'leap',700,@(x) isnumeric(x) && isscalar(x));
 addParamValue(par,'scramble',true,@(x) isnumeric(x) || islogical(x));
+addParamValue(par,'state',[],@(x) isnumeric(x) && isscalar(x));
 parse(par,sigma,x,varargin{:});
 
-[~,d] = size(x);    % # of dimensions
+[n,d] = size(x);    % # of dimensions
 D = par.Results.D;  % # of random bases
 
 if ~isempty(par.Results.W)
+   assert(size(par.Results.W,2)==d,'Feature map dimensionality must match input data');
    W = p.Results.W;
 else
    switch lower(par.Results.sampling)
@@ -92,12 +101,14 @@ else
             if par.Results.scramble
                pset = scramble(pset,'RR2');
             end
-            % Persistent stream to automatically increment draws on
-            % subsequent calls
+            % Persistent stream for properly increment draws on subsequent calls
             pstream = qrandstream(pset);
-            %fprintf('Stream opened\n')
+            %fprintf('Halton random stream opened\n')
          end
          
+         if ~isempty(par.Results.state)
+            pstream.State = par.Results.state;
+         end
          %fprintf('Stream state: %g\n',pstream.State);
          omega = pstream.qrand(D);
          W = norminv(omega,0,1)/sigma;
@@ -109,7 +120,7 @@ else
          % X = randn(max(d,D),max(d,D));
          % s = sqrt(sum(X.^2,2));
          s = sqrt(chi2rnd(max(d,D),max(d,D),1));
-         % S makes the norms of the rows of SQ and G identically distributed
+         % S ensures that the row norms of SQ & G are identically distributed
          S = diag(s);
          
          W = (S*Q)/sigma;
