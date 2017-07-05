@@ -11,7 +11,13 @@ end
 try
    % Scaled to match Matlab fwht
    Y = utils.mexHadamard(X)/2^n2;
-catch
-   Y = fwht(X,2^n2,'hadamard');
+catch err
+   if strcmp(err.identifier,'MATLAB:UndefinedFunction')
+      warning('fwht:mex',...
+         sprintf(['Mex file ''mexHadamard.c'' has not be compiled\n'...
+         'Transform will be done with slow Matlab version.']));
+      Y = fwht(X,2^n2,'hadamard');
+   else
+      rethrow(err);
+   end
 end
-

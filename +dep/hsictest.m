@@ -8,28 +8,30 @@
 %
 %     H0 : X and Y are mutually independent
 %
-%     This hypothesis is tested using several different permutation methods. 
+%     This hypothesis is tested using several different methods. 
 %
 %     The default permutation method avoids permuting the data altogether 
 %     by approximating the permutation distribution using a moment-matched 
 %     Pearson Type III distribution (Bilodeau & Guetsop Nangue 2017; Josse 
 %     et al 2008; Minas & Montana 2014). The first three moments of the 
 %     permutation distribution can be calculated exactly for HSIC and related 
-%     statistics (Kazi-Aoual et al 1995), and are robust and accurate (Josse 
-%     et al 2008). Since this method does not actually permute the data, it 
-%     is very fast, achieving the same statistical power that would otherwise 
-%     require millions of permutations (Minas & Montana, 2014).
-%
-%     The Gamma approximation proposed by Gretton et al (2008) is also
-%     implemented for completeness, although it is strictly inferior to the 
-%     Pearson Type III approximation and should not be used (Bilodeau & Guetsop 
-%     Nangue 2017).
+%     statistics (Kazi-Aoual et al 1995), and the Pearson type III fit using
+%     these moments is a robust and accurate approximation to the null
+%     distribution (Josse et al 2008). Since this method does not actually
+%     permute the data, it is very fast, achieving the same statistical power
+%     that would otherwise require millions of permutations (Minas & Montana,
+%     2014).
 %
 %     Testing using actual permutations of the data are also implemented.
 %     Naive permutation of the rows of X or Y is expensive due to O(n^2) 
 %     distance calculations. This can be avoided since it is equivalent to 
 %     simultaneously permuting the rows and columns of the distance matrix, 
 %     and recomputing the statistic with the permuted distance matrix.
+%
+%     The Gamma approximation proposed by Gretton et al (2008) is also
+%     implemented for completeness, although it is strictly inferior to the 
+%     Pearson Type III approximation and should not be used (Bilodeau & Guetsop 
+%     Nangue 2017).
 %
 %     INPUTS
 %     x - [m x p] m samples of dimensionality p

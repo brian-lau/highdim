@@ -15,11 +15,12 @@
 %     Pearson Type III distribution (Bilodeau & Guetsop Nangue 2017; Josse 
 %     et al 2008; Minas & Montana 2014). The first three moments of the 
 %     permutation distribution can be calculated exactly for distance 
-%     covariance and related statistics (Kazi-Aoual et al 1995), and are 
-%     robust and accurate (Josse et al 2008). Since this method does not 
-%     actually permute the data, it is very fast, achieving the same 
-%     statistical power that would otherwise require millions of permutations 
-%     (Minas & Montana, 2014).
+%     covariance and related statistics (Kazi-Aoual et al 1995), and the 
+%     Pearson type III fit using these moments is a robust and accurate 
+%     approximation to the null distribution (Josse et al 2008). Since this 
+%     method does not actually permute the data, it is very fast, achieving 
+%     the same statistical power that would otherwise require millions of 
+%     permutations (Minas & Montana, 2014).
 %
 %     Testing using actual permutations of the data are also implemented.
 %     Naive permutation of the rows of X or Y is expensive due to O(n^2) 

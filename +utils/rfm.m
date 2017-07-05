@@ -13,7 +13,7 @@
 %                'orf' - Orthogonal Random Features
 %                'sorf'- Structured Orthogonal Random Features
 %                'mm'  - Moment-Matched
-%     D        - scalar, dimensionality of feature map
+%     D        - scalar, target dimensionality of feature map
 %     W        - [D x d] pre-computed feature map, convenience for a
 %                applying feature map to new data
 %     complex  - boolean, true returns map as complex
@@ -56,8 +56,9 @@
 %     GNU General Public License for more details.
 
 % TODO
-% o ORF should probably be run in blocks
-% o SORF
+% o ORF, SORF should probably be run in blocks
+%   currently generates W that is dxd and extracts Dxd segment
+% o fastfood
 
 function [phi,W] = rfm(sigma,x,varargin)
 persistent pstream; % for qmc
@@ -119,8 +120,6 @@ else
          [Q,~] = qr(G);
          
          % Chi-distributed with max(d,D) degrees of freedom
-         % X = randn(max(d,D),max(d,D));
-         % s = sqrt(sum(X.^2,2));
          s = sqrt(chi2rnd(max(d,D),max(d,D),1));
          % S ensures that the row norms of SQ & G are identically distributed
          S = diag(s);
@@ -129,20 +128,20 @@ else
          W = W(1:D,1:d);
       case {'sorf'}
          n2 = nextpow2(max(D,d));
-%          H = (1/sqrt(2^n2))*hadamard(2^n2);
-%          D1 = diag(2*(rand(2^n2,1)<0.5) - 1);
-%          D2 = diag(2*(rand(2^n2,1)<0.5) - 1);
-%          D3 = diag(2*(rand(2^n2,1)<0.5) - 1);
-%          W = sqrt(2^n2)*H*D1*H*D2*H*D3;
+         % Brute-force matrix multiplication, O(d^2)
+         % H = (1/sqrt(2^n2))*hadamard(2^n2);
+         % D1 = diag(2*(rand(2^n2,1)<0.5) - 1);
+         % D2 = diag(2*(rand(2^n2,1)<0.5) - 1);
+         % D3 = diag(2*(rand(2^n2,1)<0.5) - 1);
+         % W = sqrt(2^n2)*H*D1*H*D2*H*D3;
 
-         D1 = diag(2*(rand(2^n2,1)<0.5) - 1);
-         D2 = diag(2*(rand(2^n2,1)<0.5) - 1);
-         D3 = diag(2*(rand(2^n2,1)<0.5) - 1);
-         HD1 = fwht(D1,2^n2,'hadamard')*sqrt(2^n2);
-         HD2 = fwht(D2,2^n2,'hadamard')*sqrt(2^n2);
-         HD3 = fwht(D3,2^n2,'hadamard')*sqrt(2^n2);
-         W = sqrt(2^n2)*HD1*HD2*HD3;
+         % Using Fast Hadamard transform, O(d log d)
+         Ds = 2*(rand(2^n2,3)<0.5) - 1; % Rademacher distributed diagonals
+         HD1 = sqrt(2^n2)*utils.fwht( diag(Ds(:,1)) );
+         HD2 = sqrt(2^n2)*utils.fwht( diag(Ds(:,2)) );
+         HD3 = sqrt(2^n2)*utils.fwht( diag(Ds(:,3)) );
          
+         W = sqrt(2^n2)*HD1*HD2*HD3;
          W = W(1:D,1:d)/sigma;
       otherwise
          error('Unrecognized sampling method');

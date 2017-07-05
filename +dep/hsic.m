@@ -6,18 +6,21 @@
 %     gaussian kernels.
 %
 %     INPUTS
-%     x - [m x p] m samples of dimensionality p
-%     y - [m x q] m samples of dimensionality q
+%     x - [n x p] n samples of dimensionality p
+%     y - [n x q] n samples of dimensionality q
 %
 %     OPTIONAL (name/value pairs)
 %     sigmax   - gaussian bandwidth, default = median heuristic
 %     sigmay   - gaussian bandwidth, default = median heuristic
 %     unbiased - boolean indicated biased estimator (default=false)
+%     gram     - true indicates x & y are Gram matrices (default=false)
+%     doublecenter - true indicates x & y are double-centered Gram 
+%                matrices (default=false)
 %
 %     OUTPUTS
 %     h - Hilbert-Schmidt Independence Criterion
-%     K
-%     L
+%     K - [n x n] Gram matrix for x
+%     L - [n x n] Gram matrix for y
 %
 %     REFERENCE
 %     Gretton et al (2008). A kernel statistical test of independence. NIPS
@@ -88,17 +91,20 @@ if par.Results.unbiased % U-statistic
    K = utils.zerodiag(K);
    L = utils.zerodiag(L);
 
+   % l = ones(m,1);
+   % h = trace(K*L) + (l'*K*l*l'*L*l)/(n-1)/(n-2) - 2*(l'*K*L*l)/(n-2);
+   % h = h/(n*(n-3));
+   % Equivalent, but faster
    Kc = utils.ucenter(K);
    Lc = utils.ucenter(L);
    h = sum(sum(Kc.*Lc))/(n*(n-3));
-   % l = ones(m,1);
-   % h = trace(K*L) + (l'*K*l*l'*L*l)/(n-1)/(n-2) - 2*(l'*K*L*l)/(n-2)   
 else                    % V-statistic
+   
+   % h = trace(H*K*H*H*L*H)/n^2;
+   % Equivalent, but faster
    if ~exist('Kc','var')
       Kc = utils.dcenter(K);
       Lc = utils.dcenter(L);
    end
    h = sum(sum(Kc.*Lc))/n^2;
-   % h = trace(H*K*H*H*L*H)/n^2
-   % h = sum(sum((H*K*H).*(H*L*H)))/n^2;
 end
