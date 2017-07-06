@@ -1,6 +1,6 @@
 % HSIC                        Hilbert-Schmidt Independence Criterion
-% 
-%     [stat,K,L,sigmax,sigmay] = hsic(x,y,varargin)
+%
+%     [stat,K,L,varargout] = hsic(x,y,varargin)
 %
 %     Estimate the Hilbert-Schmidt Independence Criterion (HSIC) using
 %     gaussian kernels.
@@ -10,12 +10,12 @@
 %     y - [n x q] n samples of dimensionality q
 %
 %     OPTIONAL (name/value pairs)
-%     sigmax   - gaussian bandwidth, default = median heuristic
-%     sigmay   - gaussian bandwidth, default = median heuristic
 %     unbiased - boolean indicated biased estimator (default=false)
 %     gram     - true indicates x & y are Gram matrices (default=false)
-%     doublecenter - true indicates x & y are double-centered Gram 
+%     doublecenter - true indicates x & y are double-centered Gram
 %                matrices (default=false)
+%
+%     Additional name/value pairs are passed through to the kernel function.
 %
 %     OUTPUTS
 %     h - Hilbert-Schmidt Independence Criterion
@@ -38,7 +38,7 @@
 %     it under the terms of the GNU General Public License as published by
 %     the Free Software Foundation, either version 3 of the License, or
 %     (at your option) any later version.
-% 
+%
 %     This program is distributed in the hope that it will be useful,
 %     but WITHOUT ANY WARRANTY; without even the implied warranty of
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -50,8 +50,7 @@ par = inputParser;
 par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addRequired(par,'y',@isnumeric);
-addParamValue(par,'sigmax',[],@isnumeric);
-addParamValue(par,'sigmay',[],@isnumeric);
+addParamValue(par,'kernel','rbf',@ischar);
 addParamValue(par,'unbiased',false,@(x) isnumeric(x) || islogical(x));
 addParamValue(par,'gram',false,@isscalar);
 addParamValue(par,'doublecenter',false,@isscalar);
@@ -59,9 +58,10 @@ parse(par,x,y,varargin{:});
 
 [m,p] = size(x);
 [n,q] = size(y);
-assert(m == n,'HSIC requires x and y to have the same # of samples');
 
-% error on doublecenter = true && unbiased
+assert(m == n,'HSIC requires x and y to have the same # of samples');
+assert(~(par.Results.doublecenter&&par.Results.unbiased),...
+   'Cannot compute unbiased HSIC estimate with double-centered Gram matrices.');
 
 if par.Results.doublecenter
    Kc = x;
@@ -70,27 +70,23 @@ elseif par.Results.gram
    K = x;
    L = y;
 else
-   if isempty(par.Results.sigmax)
-      % Median heuristic, Gretton et al. 2012
-      sigmax = sqrt(0.5*median(pdist(x).^2));
-   else
-      sigmax = par.Results.sigmax;
+
+   switch lower(par.Results.kernel)
+      case {'rbf' 'gauss' 'gaussian'}
+         [K,sigmax] = utils.rbf(x,[],par.Unmatched);
+         [L,sigmay] = utils.rbf(y,[],par.Unmatched);
+      case {'distance'}
+         K = utils.distkern(x,x);
+         L = utils.distkern(y,y);
+      otherwise
+         
    end
-   
-   if isempty(par.Results.sigmay)
-      sigmay = sqrt(0.5*median(pdist(y).^2));
-   else
-      sigmay = par.Results.sigmay;
-   end
-   
-   K = utils.rbf(sigmax,x,[],par.Unmatched);
-   L = utils.rbf(sigmay,y,[],par.Unmatched);
 end
 
 if par.Results.unbiased % U-statistic
    K = utils.zerodiag(K);
    L = utils.zerodiag(L);
-
+   
    % l = ones(m,1);
    % h = trace(K*L) + (l'*K*l*l'*L*l)/(n-1)/(n-2) - 2*(l'*K*L*l)/(n-2);
    % h = h/(n*(n-3));
@@ -99,7 +95,6 @@ if par.Results.unbiased % U-statistic
    Lc = utils.ucenter(L);
    h = sum(sum(Kc.*Lc))/(n*(n-3));
 else                    % V-statistic
-   
    % h = trace(H*K*H*H*L*H)/n^2;
    % Equivalent, but faster
    if ~exist('Kc','var')

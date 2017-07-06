@@ -1,12 +1,12 @@
 % RFM                         Random feature maps for Gaussian kernel
 %
-%     [phi,W] = rfm(sigma,x,varargin)
+%     [phi,W] = rfm(x,varargin)
 %
 %     INPUTS
-%     sigma - scalar, standard deviation of Gaussian kernel
 %     x     - [n x d] n samples of dimensionality d
 %
 %     OPTIONAL
+%     sigma    - scalar, standard deviation of Gaussian kernel, default = 1
 %     sampling - string indicating method for generating random features
 %                'uniform' - (DEFAULT)
 %                'qmc' - Quasi-Monte Carlo using Halton sequence
@@ -60,13 +60,14 @@
 %   currently generates W that is dxd and extracts Dxd segment
 % o fastfood
 
-function [phi,W] = rfm(sigma,x,varargin)
+function [phi,W] = rfm(x,varargin)
 persistent pstream; % for qmc
 
 par = inputParser;
 par.KeepUnmatched = true;
-addRequired(par,'sigma',@isnumeric);
+%addRequired(par,'sigma',@isnumeric);
 addRequired(par,'x',@isnumeric);
+addParamValue(par,'sigma',1,@(x) isnumeric(x) && isscalar(x));
 addParamValue(par,'sampling','uniform',@ischar);
 addParamValue(par,'complex',false,@islogical);
 addParamValue(par,'W',[],@ismatrix);
@@ -75,10 +76,11 @@ addParamValue(par,'skip',1000,@(x) isnumeric(x) && isscalar(x));
 addParamValue(par,'leap',700,@(x) isnumeric(x) && isscalar(x));
 addParamValue(par,'scramble',true,@(x) isnumeric(x) || islogical(x));
 addParamValue(par,'state',[],@(x) isnumeric(x) && isscalar(x));
-parse(par,sigma,x,varargin{:});
+parse(par,x,varargin{:});
 
 [n,d] = size(x);    % # of dimensions
 D = par.Results.D;  % # of random bases
+sigma = par.Results.sigma;
 
 if ~isempty(par.Results.W)
    assert(size(par.Results.W,2)==d,'Feature map dimensionality must match input data');
