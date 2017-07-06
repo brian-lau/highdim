@@ -1,3 +1,15 @@
+% FWHT                        Fast Discrete Walsh-Hadamard Transform
+% 
+%     Y = fwht(X)
+%
+%     Wrapper for efficient mex version of FWHT (mexHadamard.c).
+%
+%     INPUTS
+%     X - input matrix or column vector
+%
+%     OUTPUTS
+%     Y - transformed data
+
 function Y = fwht(X)
 
 [n,m] = size(X);
