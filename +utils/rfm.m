@@ -65,7 +65,6 @@ persistent pstream; % for qmc
 
 par = inputParser;
 par.KeepUnmatched = true;
-%addRequired(par,'sigma',@isnumeric);
 addRequired(par,'x',@isnumeric);
 addParamValue(par,'sigma',1,@(x) isnumeric(x) && isscalar(x));
 addParamValue(par,'sampling','uniform',@ischar);

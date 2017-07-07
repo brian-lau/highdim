@@ -22,8 +22,22 @@
 %     K - [n x n] Gram matrix for x
 %     L - [n x n] Gram matrix for y
 %
+%     EXAMPLE
+%     rng(1234)
+%     n = 1000; p = 50; q = p;
+%     x = rand(n,p);
+%     y = x.^2;
+%     h = dep.hsic(x,y) % default Gaussian kernel with median heuristic
+%
+%     % Equivalence between distance covariance & HSIC
+%     h = dep.hsic(x,y,'kernel','distance');
+%     d = dep.dcov(x,y);
+%     [4*h d^2]
+%
 %     REFERENCE
 %     Gretton et al (2008). A kernel statistical test of independence. NIPS
+%     Sejdinovic et al (2013). Equivalence of distance-based and RKHS-based
+%       statistics in hypothesis testing. Annals of Statistics 41: 2263-2291
 %     Song et al (2012). Feature Selection via Dependence Maximization.
 %       Journal of Machine Learning Research 13: 1393-1434
 %
@@ -70,12 +84,12 @@ elseif par.Results.gram
    K = x;
    L = y;
 else
-
    switch lower(par.Results.kernel)
       case {'rbf' 'gauss' 'gaussian'}
          [K,sigmax] = utils.rbf(x,[],par.Unmatched);
          [L,sigmay] = utils.rbf(y,[],par.Unmatched);
       case {'distance'}
+         % Sejdinovic et al, pg. 2272, example 15
          K = utils.distkern(x,x);
          L = utils.distkern(y,y);
       otherwise
@@ -90,12 +104,14 @@ if par.Results.unbiased % U-statistic
    % l = ones(m,1);
    % h = trace(K*L) + (l'*K*l*l'*L*l)/(n-1)/(n-2) - 2*(l'*K*L*l)/(n-2);
    % h = h/(n*(n-3));
+   
    % Equivalent, but faster
    Kc = utils.ucenter(K);
    Lc = utils.ucenter(L);
    h = sum(sum(Kc.*Lc))/(n*(n-3));
 else                    % V-statistic
    % h = trace(H*K*H*H*L*H)/n^2;
+   
    % Equivalent, but faster
    if ~exist('Kc','var')
       Kc = utils.dcenter(K);

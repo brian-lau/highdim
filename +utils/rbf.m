@@ -11,17 +11,21 @@
 %     sigma  - scalar, standard deviation of Gaussian kernel, default = []
 %     sigest - string indicating method for estimating sigma, only valid
 %              when sigma = []
-%              'median' -
-%              'adapt'  -
-%     approx - string indicating method for approximating kernel
-%              'rfm' - random feature map
+%              'median' - Median heuristic, Gretton et al. 2012
+%              'adapt'  - 
+%     approx - string indicating method for approximating kernel, 
+%              'none' - no approximation (DEFAULT)
+%              'rfm'  - random feature map
 %
 %     Additional name/value pairs are passed through to function for 
-%     estimating kernel.
+%     estimating the kernel when using an approximation method.
 %
 %     OUTPUTS
 %     k     - kernel matrix
 %     sigma - standard deviation of Gaussian kernel
+%
+%     SEE ALSO
+%     rfm
 
 %     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
@@ -75,6 +79,8 @@ switch lower(par.Results.approx)
       end
    case {'nystrom'}
       % TODO
+   case {'taylor'}
+      % TODO % Kotter, Keshet et al 2011
    otherwise
       error('Unrecognized rbf approximation');
 end

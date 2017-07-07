@@ -1,5 +1,12 @@
 % Squared euclidean distance matrix
 % Faster than pdist2(x,x) & squareform(pdist(x))
+%
+% x = randn(5000,1000);
+% y = randn(200,1000);
+% tic; sqrt(utils.sqdist(x)); toc
+% tic; pdist2(x,x); toc
+% norm(utils.sqdist(x) - pdist2(x,x).^2,'fro')
+% norm(utils.sqdist(x,y) - pdist2(x,y).^2,'fro')
 function D = sqdist(X,Y)
 
 if (nargin == 1) || isempty(Y)
