@@ -3,7 +3,7 @@
 %     [phi,W] = rfm(x,varargin)
 %
 %     INPUTS
-%     x     - [n x d] n samples of dimensionality d
+%     X     - [n x d] n samples of dimensionality d
 %
 %     OPTIONAL
 %     sigma    - scalar, standard deviation of Gaussian kernel, default = 1
@@ -17,17 +17,19 @@
 %     W        - [D x d] pre-computed feature map, convenience for a
 %                applying feature map to new data
 %     complex  - boolean, true returns map as complex
+%     sincos   - boolean, true returns sin/cos embedding, default = true
 %     The following parameters are specific for sampling = 'qmc'
-%     skip     - scalar, # initial points to omit
-%     leap     - scalar, # points in between sets
-%     scramble - boolean, scramble sequence
+%     skip     - scalar, # initial points to omit, default = 1000
+%     leap     - scalar, # points in between sets, detault = 700
+%     scramble - boolean, scramble sequence, default = true
 %     state    - scalar, state of qmc generator
 %
 %     OUTPUTS
-%     phi - feature map
-%           [D x n] when 'complex' = true
-%           [2D x n] when 'complex' = false, cos and sin components stacked
+%     phi - feature mapped data
+%           [n x D] when 'complex' = true
+%           [n x 2D] when 'complex' = false, cos and sin components stacked
 %     W   - [D x d] feature map
+%     rngState - state of the RNG before sampling
 %
 %     REFERENCES
 %     Felix et al (2016). Orthogonal random features. Advances in Neural 
@@ -59,27 +61,33 @@
 % o ORF, SORF should probably be run in blocks
 %   currently generates W that is dxd and extracts Dxd segment
 % o fastfood
+% o sigma estimate
 
-function [phi,W] = rfm(x,varargin)
+function [phi,W,rngState] = rfm(X,varargin)
 persistent pstream; % for qmc
 
 par = inputParser;
 par.KeepUnmatched = true;
-addRequired(par,'x',@isnumeric);
+addRequired(par,'X',@isnumeric);
 addParamValue(par,'sigma',1,@(x) isnumeric(x) && isscalar(x));
 addParamValue(par,'sampling','uniform',@ischar);
-addParamValue(par,'complex',false,@islogical);
 addParamValue(par,'W',[],@ismatrix);
 addParamValue(par,'D',2^4,@(x) isnumeric(x) && isscalar(x));
+addParamValue(par,'complex',false,@islogical);
+addParamValue(par,'sincos',true,@islogical);
 addParamValue(par,'skip',1000,@(x) isnumeric(x) && isscalar(x));
 addParamValue(par,'leap',700,@(x) isnumeric(x) && isscalar(x));
 addParamValue(par,'scramble',true,@(x) isnumeric(x) || islogical(x));
 addParamValue(par,'state',[],@(x) isnumeric(x) && isscalar(x));
-parse(par,x,varargin{:});
+parse(par,X,varargin{:});
 
-[n,d] = size(x);    % # of dimensions
+[n,d] = size(X);    % # of dimensions
 D = par.Results.D;  % # of random bases
 sigma = par.Results.sigma;
+
+if nargout == 3
+   rngState = rng; 
+end
 
 if ~isempty(par.Results.W)
    assert(size(par.Results.W,2)==d,'Feature map dimensionality must match input data');
@@ -88,7 +96,6 @@ else
    switch lower(par.Results.sampling)
       case {'uniform' 'mc'}
          % Random fourier features
-         % This version is more accurate, Sutherland & Schneider (2105)
          W = randn(D,d)/sigma;
       case {'mm'}
          if D < d
@@ -149,10 +156,17 @@ else
    end
 end
 
-z = W*x'; % [D x d] * [n x d]'
+Z = X*W'; % [n x d] * [D x d]'
 
-if par.Results.complex
-   phi = (cos(z) - 1i*sin(z)) * sqrt(1/D);
+if par.Results.sincos
+   % Use the version with sin & cos features, which is more accurate,
+   % Sutherland & Schneider (2105)
+   if par.Results.complex
+      phi = (cos(Z) - 1i*sin(Z)) * sqrt(1/D);
+   else
+      phi = [cos(Z) , sin(Z)] * sqrt(1/D);
+   end
 else
-   phi = [cos(z) ; sin(z)] * sqrt(1/D);
+   b = rand(1,D)*2*pi;
+   phi = cos(bsxfun(@plus,Z,b)) * sqrt(1/D);
 end
