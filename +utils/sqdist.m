@@ -23,4 +23,4 @@ else
    D = bsxfun(@plus,XX,YY) - 2*(X*Yt);
 end
 
-D(D<0) = 0;
+%D(D<0) = 0;
