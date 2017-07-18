@@ -25,7 +25,8 @@
 
    Update Stephen Becker, Feb 27 2014, fix compiling issue for Mac OS X
    Update Stephen Becker, Mar  3 2014, issue error if input data is sparse
-
+   https://github.com/stephenbeckr/SparsifiedKMeans
+  
    Copyright (c) 2011, Peter Stobbe
    All rights reserved.
 
