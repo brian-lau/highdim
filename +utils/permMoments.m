@@ -33,14 +33,18 @@
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
 
-function [mu,sigma2,skew] = permMoments(A1,A2)
+function [mu,sigma2,skew] = permMoments(A1,A2,approx)
+
+if nargin < 3
+   approx = 0;
+end
 
 assert(all(size(A1)==size(A2)),'A1 and A2 must have the same size.');
 [m,n] = size(A1);
 assert(m==n,'A1 and A2 must be square.');
 
-[T(1),T2(1),S2(1),T3(1),S3(1),U(1),R(1),B(1)] = useful(A1);
-[T(2),T2(2),S2(2),T3(2),S3(2),U(2),R(2),B(2)] = useful(A2);
+[T(1),T2(1),S2(1),T3(1),S3(1),U(1),R(1),B(1)] = useful(A1,approx);
+[T(2),T2(2),S2(2),T3(2),S3(2),U(2),R(2),B(2)] = useful(A2,approx);
 
 % First moment
 m1 = prod(T)/n + prod(-T)/(n*(n-1));
@@ -72,10 +76,14 @@ mu = m1;
 sigma2 = m2 - m1^2;
 skew = (m3 - 3*sigma2*m1 - m1^3) / (sigma2^(3/2));
 
-function [T,T2,S2,T3,S3,U,R,B] = useful(A)
+function [T,T2,S2,T3,S3,U,R,B] = useful(A,approx)
 T = trace(A);
-AA = A*A;
-T2 = sum(sum(A.^2));
+if approx
+   AA = utils.approxmtimes(A,A,100);
+else
+   AA = A*A;
+end
+T2 = sum(sum(A.^2)); 
 S2 = sum(diag(A.^2));
 T3 = sum(sum(AA.*A));
 S3 = sum(diag(A).^3);

@@ -72,6 +72,7 @@
 % TODO
 %  o B = A
 %  o B = A'
+%  o streaming (one-pass for uni with n known, two-pass for other cases)
 %  o nargout == 2 should return C & R for all algs, AB \approx C*R
 %  o faster randsample
 
@@ -90,7 +91,7 @@ end
 c = fix(c);
 
 assert(n==n2,'Inner matrix dimensions must agree.');
-assert((c>=1)&&(c<=n),'c must be in [1,n].');
+assert(c>=1,'c must be >= 1.');
 
 switch lower(method)
    case {'greedy'}
