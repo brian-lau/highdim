@@ -1,31 +1,29 @@
 % RBF                         Kernel matrix using Gaussian radial basis
-%
+% 
 %     [k,sigma] = rbf(x,y,varargin)
-%
+% 
 %     INPUTS
 %     x     - [m x p] m samples of dimensionality p
 %     y     - [n x p] n samples of dimensionality p
 %             OR [], empty
-%
+% 
 %     OPTIONAL
 %     sigma  - scalar, standard deviation of Gaussian kernel, default = []
-%     sigest - string indicating method for estimating sigma, only valid
-%              when sigma = []
+%     Only valid when sigma = []
+%     sigest - string indicating method for estimating sigma, 
 %              'median' - Median heuristic, Gretton et al. 2012
 %              'adapt'  - 
-%     approx - string indicating method for approximating kernel, 
-%              'none' - no approximation (DEFAULT)
-%              'rfm'  - random feature map
-%
+%     frac   - scalar (0,1] indicating fraction of data to use for sigest
+% 
 %     Additional name/value pairs are passed through to function for 
 %     estimating the kernel when using an approximation method.
-%
+% 
 %     OUTPUTS
 %     k     - kernel matrix
 %     sigma - standard deviation of Gaussian kernel
-%
+% 
 %     SEE ALSO
-%     rfm
+%     sigest
 
 %     $ Copyright (C) 2017 Brian Lau, brian.lau@upmc.fr $
 %     The full license and most recent version of the code can be found at:
@@ -48,39 +46,13 @@ par.KeepUnmatched = true;
 addRequired(par,'x',@isnumeric);
 addRequired(par,'y',@isnumeric);
 addParamValue(par,'sigma',[],@(x) isnumeric(x) && isscalar(x));
-addParamValue(par,'sigest','median',@ischar);
-addParamValue(par,'approx','none',@ischar);
 parse(par,x,y,varargin{:});
 
 if isempty(par.Results.sigma)
-   switch lower(par.Results.sigest)
-      case {'median'}
-         % Median heuristic, Gretton et al. 2012
-         sigma = sqrt(0.5*median(pdist(x).^2));
-      case {'adapt'}
-         % TODO
-      otherwise
-         error('Unknown sigma estimator');
-   end
+   % Set sigma based on first input
+   sigma = utils.sigest(x,par.Unmatched);
 else
    sigma = par.Results.sigma;
 end
 
-switch lower(par.Results.approx)
-   case {'none'}
-      k = exp(-utils.sqdist(x,y)/(2*sigma^2));
-   case {'random' 'rfm'}
-      phix = utils.rfm(sigma,x,par.Unmatched);
-      if isempty(y)
-         k = phix'*phix;
-      else
-         phiy = utils.rfm(sigma,y,par.Unmatched);
-         k = phix'*phiy;
-      end
-   case {'nystrom'}
-      % TODO
-   case {'taylor'}
-      % TODO % Kotter, Keshet et al 2011
-   otherwise
-      error('Unrecognized rbf approximation');
-end
+k = exp(-utils.sqdist(x,y)/(2*sigma^2));
