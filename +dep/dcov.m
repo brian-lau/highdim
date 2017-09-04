@@ -20,6 +20,17 @@
 %     A   - double-centered or U-centered distance matrix for x
 %     B   - double-centered or U-centered distance matrix for y
 %
+%     EXAMPLE
+%     rng(1234)
+%     n = 1000; p = 50; q = p;
+%     x = rand(n,p);
+%     y = x.^2;
+%     d = dep.dcov(x,y)
+%
+%     % Equivalence between distance covariance (squared) & HSIC
+%     h = dep.hsic(x,y,'kernel','brownian');
+%     [4*h d^2]
+%
 %     REFERENCE
 %     Szekely et al (2007). Measuring and testing independence by correlation 
 %       of distances. Ann Statist 35: 2769-2794
@@ -47,8 +58,10 @@ function [d,dvx,dvy,A,B] = dcov(x,y,varargin)
 
 par = inputParser;
 par.KeepUnmatched = true;
+par.PartialMatching = false;
 addRequired(par,'x',@isnumeric);
 addRequired(par,'y',@isnumeric);
+addParamValue(par,'approx','none',@ischar);
 addParamValue(par,'unbiased',false,@isscalar);
 addParamValue(par,'index',1,@(x) isscalar(x) && (x>0) && (x<=2));
 addParamValue(par,'dist',false,@isscalar);
@@ -67,8 +80,22 @@ else
       % Inputs are euclidean distance matrices
       a = x;
       b = y;
+   elseif strcmp(par.Results.approx,'nystrom')
+      % Looks like A&B are scaled versions of K&L
+      % utils.dcenter(L)*2+B
+      [h,K,L] = dep.hsic(x,y,'approx','nys','kernel','brownian',par.Unmatched);
+      d = sqrt(4*h);
+      if nargout > 1
+         A = -2*utils.dcenter(K*K');
+         B = -2*utils.dcenter(L*L');
+         dvx = sqrt(sum(sum(A.*A))/n^2);
+         dvy = sqrt(sum(sum(B.*B))/n^2);
+      end
+      return;
+%    elseif any(strcmp(par.Results.approx,{'rp' 'randomproj'}))
+%       
    else
-      % Distance matrices, equivalent to pdist2(x,x) and squareform(pdist(x))
+      % Distance matrices
       a = sqrt(utils.sqdist(x,x));
       b = sqrt(utils.sqdist(y,y));
    end
