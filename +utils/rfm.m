@@ -1,14 +1,14 @@
 % RFM                         Random feature maps for Gaussian kernel
 %
-%     [phi,W] = rfm(x,varargin)
+%     [phi,W,rngState] = rfm(X,varargin)
 %
 %     INPUTS
 %     X     - [n x d] n samples of dimensionality d
 %
 %     OPTIONAL
 %     sigma    - scalar, standard deviation of Gaussian kernel, default = 1
-%     sampling - string indicating method for generating random features
-%                'uniform' - (DEFAULT)
+%     sampling - string indicating method for sampling random features
+%                'uniform' - Classic random fourier features (DEFAULT)
 %                'qmc' - Quasi-Monte Carlo using Halton sequence
 %                'orf' - Orthogonal Random Features
 %                'sorf'- Structured Orthogonal Random Features
@@ -61,7 +61,7 @@
 % o ORF, SORF should probably be run in blocks
 %   currently generates W that is dxd and extracts Dxd segment
 % o fastfood
-% o sigma estimate
+% o better default D
 
 function [phi,W,rngState] = rfm(X,varargin)
 persistent pstream; % for qmc
@@ -69,7 +69,7 @@ persistent pstream; % for qmc
 par = inputParser;
 par.KeepUnmatched = true;
 addRequired(par,'X',@isnumeric);
-addParamValue(par,'sigma',1,@(x) isnumeric(x) && isscalar(x));
+addParamValue(par,'sigma',[],@(x) isnumeric(x) && isscalar(x));
 addParamValue(par,'sampling','uniform',@ischar);
 addParamValue(par,'W',[],@ismatrix);
 addParamValue(par,'D',2^4,@(x) isnumeric(x) && isscalar(x));
@@ -83,7 +83,11 @@ parse(par,X,varargin{:});
 
 [n,d] = size(X);    % # of dimensions
 D = par.Results.D;  % # of random bases
-sigma = par.Results.sigma;
+if isempty(par.Results.sigma)
+   sigma = utils.sigest(X,par.Unmatched);
+else
+   sigma = par.Results.sigma;
+end
 
 if nargout == 3
    rngState = rng; 
@@ -94,7 +98,7 @@ if ~isempty(par.Results.W)
    W = p.Results.W;
 else
    switch lower(par.Results.sampling)
-      case {'uniform' 'mc'}
+      case {'uniform' 'uni' 'mc' 'rff'}
          % Random fourier features
          W = randn(D,d)/sigma;
       case {'mm'}
@@ -151,6 +155,9 @@ else
          
          W = sqrt(2^n2)*HD1*HD2*HD3;
          W = W(1:D,1:d)/sigma;
+      case {'sc'}
+         %Signed Circulant Matrix Projection
+         % http://felixyu.org/pdf/cbe_slides.pdf
       otherwise
          error('Unrecognized sampling method');
    end
