@@ -1,5 +1,5 @@
 % Sejdinovic et al, pg. 2272, example 15
-
+% Brownian distance kernel
 function k = distkern(X,Y,varargin)
 
 par = inputParser;
