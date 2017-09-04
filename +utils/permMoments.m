@@ -1,6 +1,6 @@
 % PERMMOMENTS                 Exact moments of permutation distribution
 % 
-%     [mu,sigma2,skew] = permMoments(A1,A2)
+%     [mu,sigma2,skew] = permMoments(A1,A2,approx)
 %
 %     Returns the first three moments of the permutation distribution of 
 %     T = trace(A1*A2). Exact expressions have been obtained by Kazi-Aoual
@@ -10,6 +10,10 @@
 %     INPUTS
 %     A1 - [n x n] matrix
 %     A2 - [n x n] matrix
+%
+%     OPTIONAL
+%     approx - scalar integer >= 0, positive integers determine rank of 
+%              approximate multiplication A1*A2, default = 0 (exact)
 %
 %     REFERENCE
 %     Bilodeau & Guetsop Nangue (2017). Approximations to permutation tests 
@@ -79,7 +83,7 @@ skew = (m3 - 3*sigma2*m1 - m1^3) / (sigma2^(3/2));
 function [T,T2,S2,T3,S3,U,R,B] = useful(A,approx)
 T = trace(A);
 if approx
-   AA = utils.approxmtimes(A,A,100);
+   AA = utils.approxmtimes(A,A,approx);
 else
    AA = A*A;
 end
